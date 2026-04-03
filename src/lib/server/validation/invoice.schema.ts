@@ -29,8 +29,18 @@ export const createInvoiceSchema = z
 		path: ['dueDate']
 	});
 
-export const updateInvoiceSchema = createInvoiceSchema.partial().omit({ lineItems: true }).extend({
-	lineItems: z.array(lineItemSchema).min(1).optional()
+export const updateInvoiceSchema = z.object({
+	clientId: z.string().min(1).optional(),
+	number: z.string().min(1).max(100).optional(),
+	status: invoiceStatusSchema.optional(),
+	issueDate: z.coerce.date().optional(),
+	dueDate: z.coerce.date().optional(),
+	scheduledSendDate: z.coerce.date().nullable().optional(),
+	currency: z.string().length(3).optional(),
+	taxRate: z.number().min(0).max(100).optional(),
+	lineItems: z.array(lineItemSchema).min(1).optional(),
+	paymentUrl: z.string().url().optional().or(z.literal('')),
+	customFields: z.record(z.string(), z.unknown()).optional()
 });
 
 export const markPaidSchema = z.object({

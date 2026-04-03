@@ -3,10 +3,14 @@ import type { PageServerLoad, Actions } from './$types';
 import { auth } from '$lib/server/auth';
 import { Membership, Organization } from '$lib/server/models';
 import { setActiveOrg } from '$lib/server/org-context';
+import { db } from '$lib/server/db';
 
 export const load: PageServerLoad = async (event) => {
 	const { locals } = event;
-	if (!locals.user) redirect(302, '/login');
+	if (!locals.user) {
+		const count = await db.collection('user').countDocuments();
+		redirect(302, count === 0 ? '/setup' : '/login');
+	}
 
 	const memberships = await Membership.find({ userId: locals.user.id });
 	if (memberships.length === 0) redirect(302, '/onboarding');

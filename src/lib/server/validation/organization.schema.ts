@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 const customFieldDefSchema = z.object({
-	key: z.string().min(1).regex(/^[a-z_][a-z0-9_]*$/, 'Key must be snake_case'),
+	key: z
+		.string()
+		.min(1)
+		.regex(/^[a-z_][a-z0-9_]*$/, 'Key must be snake_case'),
 	label: z.string().min(1).max(100),
 	type: z.enum(['text', 'textarea', 'number', 'date'])
 });
@@ -16,7 +19,15 @@ export const createOrganizationSchema = z.object({
 	defaultTaxRate: z.number().min(0).max(100).default(0)
 });
 
-export const updateOrganizationSchema = createOrganizationSchema.partial();
+export const updateOrganizationSchema = z.object({
+	name: z.string().min(1).max(200).optional(),
+	taxId: z.string().max(100).optional(),
+	address: z.string().max(500).optional(),
+	country: z.string().max(100).optional(),
+	logo: z.string().url().optional(),
+	currency: z.string().length(3).optional(),
+	defaultTaxRate: z.number().min(0).max(100).optional()
+});
 
 export const templateSettingsSchema = z.object({
 	accentColor: z
