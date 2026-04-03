@@ -1,18 +1,19 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
-import { Client } from '$lib/server/models';
 import { updateClientSchema } from '$lib/server/validation';
-import mongoose from 'mongoose';
+import { getClient, updateClient } from '$lib/server/services/client.service';
 
 export const load: PageServerLoad = async (event) => {
 	const { org } = await requireOrg(event);
 	const { clientId } = event.params;
 
-	if (!mongoose.isValidObjectId(clientId)) error(404, 'Client not found');
-
-	const client = await Client.findOne({ _id: clientId, orgId: org._id }).lean();
-	if (!client) error(404, 'Client not found');
+	let client;
+	try {
+		client = await getClient(clientId, org._id);
+	} catch {
+		error(404, 'Client not found');
+	}
 
 	// Convert Map to plain object for devalue serialization
 	const customFields: Record<string, string> = {};
@@ -48,8 +49,6 @@ export const actions: Actions = {
 		const { org } = await requireOrg(event);
 		const { clientId } = event.params;
 
-		if (!mongoose.isValidObjectId(clientId)) error(404, 'Client not found');
-
 		const formData = await event.request.formData();
 
 		const customFields: Record<string, unknown> = {};
@@ -76,13 +75,12 @@ export const actions: Actions = {
 			});
 		}
 
-		const updated = await Client.findOneAndUpdate(
-			{ _id: clientId, orgId: org._id },
-			{ $set: parsed.data },
-			{ returnDocument: 'after' }
-		);
-
-		if (!updated) error(404, 'Client not found');
+		try {
+			await updateClient(clientId, org._id, parsed.data);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to update client';
+			return fail(400, { errors: { _form: [message] }, values: Object.fromEntries(formData) });
+		}
 
 		redirect(303, '/clients');
 	}

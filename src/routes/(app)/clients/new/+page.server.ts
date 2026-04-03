@@ -1,8 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
-import { Client } from '$lib/server/models';
 import { createClientSchema } from '$lib/server/validation';
+import { createClient } from '$lib/server/services/client.service';
 
 export const actions: Actions = {
 	default: async (event) => {
@@ -33,7 +33,13 @@ export const actions: Actions = {
 			});
 		}
 
-		await Client.create({ ...parsed.data, orgId: org._id });
+		try {
+			await createClient(org._id, parsed.data);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to create client';
+			return fail(400, { errors: { _form: [message] }, values: Object.fromEntries(formData) });
+		}
+
 		redirect(303, '/clients');
 	}
 };
