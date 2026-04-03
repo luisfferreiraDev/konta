@@ -1,10 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { auth } from '$lib/server/auth';
+import { db } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
-		redirect(302, '/login');
+		const count = await db.collection('user').countDocuments();
+		redirect(302, count === 0 ? '/setup' : '/login');
 	}
 	return { user: locals.user };
 };
