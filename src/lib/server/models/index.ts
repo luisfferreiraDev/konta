@@ -15,3 +15,6 @@ export type { IEmailLog, EmailType, EmailStatus } from './email-log.model.js';
 
 export { AuditLog } from './audit-log.model.js';
 export type { IAuditLog } from './audit-log.model.js';
+
+export { Counter } from './counter.model.js';
+export type { ICounter } from './counter.model.js';

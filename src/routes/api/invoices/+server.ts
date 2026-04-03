@@ -10,7 +10,13 @@ import mongoose from 'mongoose';
 export const POST: RequestHandler = async (event) => {
 	const { org } = await requireOrg(event);
 
-	const body = await event.request.json();
+	let body: unknown;
+	try {
+		body = await event.request.json();
+	} catch {
+		error(400, 'Invalid JSON');
+	}
+
 	const parsed = createInvoiceSchema.safeParse(body);
 
 	if (!parsed.success) {

@@ -12,7 +12,7 @@ export const GET: RequestHandler = async (event) => {
 	const { invoiceId } = event.params;
 
 	if (!mongoose.isValidObjectId(invoiceId)) {
-		error(400, { message: 'Invalid invoice ID' });
+		error(400, 'Invalid invoice ID');
 	}
 
 	const invoice = await Invoice.findOne({ _id: invoiceId, orgId: org._id })
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async (event) => {
 		.lean();
 
 	if (!invoice) {
-		error(404, { message: 'Invoice not found' });
+		error(404, 'Invoice not found');
 	}
 
 	return json(invoice);
@@ -31,7 +31,13 @@ export const PATCH: RequestHandler = async (event) => {
 	const { org } = await requireOrg(event);
 	const { invoiceId } = event.params;
 
-	const body = await event.request.json();
+	let body: unknown;
+	try {
+		body = await event.request.json();
+	} catch {
+		error(400, 'Invalid JSON');
+	}
+
 	const parsed = updateInvoiceSchema.safeParse(body);
 
 	if (!parsed.success) {
