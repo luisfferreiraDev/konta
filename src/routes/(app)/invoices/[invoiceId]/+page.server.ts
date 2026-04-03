@@ -2,8 +2,14 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
 import { Invoice } from '$lib/server/models';
+import type { IClient } from '$lib/server/models';
 import { updateInvoiceStatus, deleteInvoice } from '$lib/server/services/invoice.service';
 import mongoose from 'mongoose';
+import type { IInvoice } from '$lib/server/models/invoice.model';
+
+type PopulatedInvoice = Omit<IInvoice, 'clientId'> & {
+	clientId: IClient | mongoose.Types.ObjectId;
+};
 
 export const load: PageServerLoad = async (event) => {
 	const { org } = await requireOrg(event);
@@ -13,9 +19,9 @@ export const load: PageServerLoad = async (event) => {
 		error(400, 'Invalid invoice ID');
 	}
 
-	const invoice = await Invoice.findOne({ _id: invoiceId, orgId: org._id })
+	const invoice = (await Invoice.findOne({ _id: invoiceId, orgId: org._id })
 		.populate('clientId')
-		.lean();
+		.lean()) as PopulatedInvoice | null;
 
 	if (!invoice) {
 		error(404, 'Invoice not found');
@@ -23,7 +29,7 @@ export const load: PageServerLoad = async (event) => {
 
 	const client =
 		invoice.clientId && typeof invoice.clientId === 'object' && 'name' in invoice.clientId
-			? (invoice.clientId as any)
+			? (invoice.clientId as IClient)
 			: null;
 
 	return {

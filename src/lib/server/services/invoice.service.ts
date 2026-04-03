@@ -133,6 +133,13 @@ export async function updateInvoice(
 		invoice.clientId = new mongoose.Types.ObjectId(data.clientId);
 	}
 
+	// Validate due date vs issue date after applying potential changes
+	const effectiveIssueDate = data.issueDate ?? invoice.issueDate;
+	const effectiveDueDate = data.dueDate ?? invoice.dueDate;
+	if (effectiveDueDate < effectiveIssueDate) {
+		throw new Error('Due date must be on or after the issue date');
+	}
+
 	// Update basic fields
 	if (data.issueDate) invoice.issueDate = data.issueDate;
 	if (data.dueDate) invoice.dueDate = data.dueDate;

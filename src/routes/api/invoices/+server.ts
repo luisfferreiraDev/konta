@@ -52,6 +52,11 @@ export const GET: RequestHandler = async (event) => {
 	const sort = url.searchParams.get('sort') || '-issueDate';
 	const skip = (page - 1) * limit;
 
+	const VALID_STATUSES = ['draft', 'scheduled', 'sent', 'paid', 'overdue', 'cancelled'];
+	if (status && !VALID_STATUSES.includes(status)) {
+		error(400, 'Invalid status value');
+	}
+
 	// Build filter
 	const filter: Record<string, unknown> = { orgId: org._id };
 

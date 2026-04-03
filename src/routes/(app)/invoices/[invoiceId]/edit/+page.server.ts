@@ -101,11 +101,11 @@ export const actions: Actions = {
 		}
 
 		// Parse custom fields
-		const customFields: Record<string, any> = {};
+		const customFields: Record<string, string> = {};
 		const customFieldDefs = org.customFieldDefs?.invoice || [];
 		for (const fieldDef of customFieldDefs) {
 			const value = formData.get(`customFields[${fieldDef.key}]`);
-			if (value) {
+			if (value && typeof value === 'string') {
 				customFields[fieldDef.key] = value;
 			}
 		}
