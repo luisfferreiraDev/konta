@@ -5,6 +5,7 @@ declare global {
 		interface Locals {
 			session: import('better-auth').Session | undefined;
 			user: import('better-auth').User | undefined;
+			activeOrg: import('$lib/server/org-context').ActiveOrgContext | null;
 		}
 	}
 }
