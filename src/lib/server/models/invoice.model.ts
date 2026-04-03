@@ -34,6 +34,7 @@ export interface IInvoice {
 	issueDate: Date;
 	dueDate: Date;
 	scheduledSendDate?: Date | null;
+	sentDate?: Date | null; // Automatically set when status changes to 'sent'
 	currency: string;
 	taxRate: number;
 	lineItems: ILineItem[];
@@ -83,6 +84,7 @@ const invoiceSchema = new Schema<IInvoice>(
 		issueDate: { type: Date, required: true },
 		dueDate: { type: Date, required: true },
 		scheduledSendDate: { type: Date, default: null },
+		sentDate: { type: Date, default: null },
 		currency: { type: String, default: 'EUR' },
 		taxRate: { type: Number, default: 0 },
 		lineItems: { type: [lineItemSchema], default: [] },
