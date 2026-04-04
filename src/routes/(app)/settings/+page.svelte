@@ -189,6 +189,19 @@
 
 	let customFieldsJson = $derived(JSON.stringify({ invoice: invoiceFields, client: clientFields }));
 
+	// ── Appearance ────────────────────────────────────────────────────────────
+	let isDark = $state(false);
+
+	$effect(() => {
+		isDark = document.documentElement.classList.contains('dark');
+	});
+
+	function toggleTheme() {
+		isDark = !isDark;
+		document.documentElement.classList.toggle('dark', isDark);
+		localStorage.setItem('theme', isDark ? 'dark' : 'light');
+	}
+
 	// ── Danger zone ───────────────────────────────────────────────────────────
 	let showDeleteOrgModal = $state(false);
 	let deleteOrgConfirmName = $state('');
@@ -735,7 +748,46 @@
 			</form>
 		</section>
 
-		<!-- ── Section 5: Danger Zone ──────────────────────────────────────── -->
+		<!-- ── Section 5: Appearance ─────────────────────────────────────────── -->
+		<section class="rounded-lg border border-gray-200 bg-white p-6">
+			<h2 class="mb-1 text-base font-semibold text-gray-900">Appearance</h2>
+			<p class="mb-5 text-sm text-gray-500">Choose your preferred color theme.</p>
+
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<div class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
+						{#if isDark}
+							<svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+							</svg>
+						{:else}
+							<svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<circle cx="12" cy="12" r="5" />
+								<path stroke-linecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+							</svg>
+						{/if}
+					</div>
+					<div>
+						<p class="text-sm font-medium text-gray-900">{isDark ? 'Dark' : 'Light'} mode</p>
+						<p class="text-xs text-gray-500">{isDark ? 'Using dark theme' : 'Using light theme'}</p>
+					</div>
+				</div>
+
+				<button
+					type="button"
+					onclick={toggleTheme}
+					class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-none {isDark ? 'bg-primary-500' : 'bg-gray-200'}"
+					role="switch"
+					aria-checked={isDark}
+				>
+					<span
+						class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform duration-200 {isDark ? 'translate-x-5' : 'translate-x-0'}"
+					></span>
+				</button>
+			</div>
+		</section>
+
+		<!-- ── Section 6: Danger Zone ──────────────────────────────────────── -->
 		<section class="rounded-lg border-2 border-red-200 bg-white p-6">
 			<h2 class="mb-1 text-base font-semibold text-red-700">Danger Zone</h2>
 			<p class="mb-5 text-sm text-gray-500">
