@@ -1,36 +1,19 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
-import { Client } from '$lib/server/models';
 import { createClientSchema } from '$lib/server/validation';
+import { listClients, createClient } from '$lib/server/services/client.service';
 
 export const GET: RequestHandler = async (event) => {
 	const { org } = await requireOrg(event);
 
 	const search = event.url.searchParams.get('search') ?? '';
-	const page = Math.max(1, parseInt(event.url.searchParams.get('page') ?? '1'));
-	const limit = Math.min(100, Math.max(1, parseInt(event.url.searchParams.get('limit') ?? '20')));
-	const skip = (page - 1) * limit;
+	const page = parseInt(event.url.searchParams.get('page') ?? '1');
+	const limit = parseInt(event.url.searchParams.get('limit') ?? '20');
 
-	const filter: Record<string, unknown> = { orgId: org._id };
-	if (search) {
-		filter.$or = [
-			{ name: { $regex: search, $options: 'i' } },
-			{ email: { $regex: search, $options: 'i' } }
-		];
-	}
+	const result = await listClients(org._id, { search, page, limit });
 
-	const [clients, total] = await Promise.all([
-		Client.find(filter).sort({ name: 1 }).skip(skip).limit(limit).lean(),
-		Client.countDocuments(filter)
-	]);
-
-	return json({
-		clients,
-		total,
-		page,
-		totalPages: Math.ceil(total / limit)
-	});
+	return json(result);
 };
 
 export const POST: RequestHandler = async (event) => {
@@ -45,10 +28,13 @@ export const POST: RequestHandler = async (event) => {
 
 	const result = createClientSchema.safeParse(body);
 	if (!result.success) {
-		error(422, 'Validation error');
+		return json(
+			{ error: 'Validation failed', errors: result.error.flatten().fieldErrors },
+			{ status: 422 }
+		);
 	}
 
-	const client = await Client.create({ ...result.data, orgId: org._id });
+	const client = await createClient(org._id, result.data);
 
-	return json(client.toJSON(), { status: 201 });
+	return json(client, { status: 201 });
 };
