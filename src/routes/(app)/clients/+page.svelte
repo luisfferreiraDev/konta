@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import DataTable from '$lib/components/DataTable.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	let deleteForm: HTMLFormElement;
+	let deleteClientId = $state('');
 
 	function pageUrl(p: number) {
 		const params = new URLSearchParams();
@@ -10,11 +15,45 @@
 		params.set('page', String(p));
 		return `?${params}`;
 	}
+
+	function deleteClient(row: Record<string, unknown>) {
+		if (!confirm('Delete this client? This cannot be undone.')) return;
+		deleteClientId = String(row._id);
+		Promise.resolve().then(() => deleteForm.requestSubmit());
+	}
+
+	const columns = [
+		{ key: 'name', label: 'Name', type: 'text' as const },
+		{ key: 'taxId', label: 'Tax ID', type: 'text' as const },
+		{ key: 'email', label: 'Email', type: 'text' as const },
+		{ key: 'country', label: 'Country', type: 'text' as const },
+		{
+			key: '_actions',
+			label: '',
+			type: 'actions' as const,
+			actions: [
+				{
+					label: 'Edit',
+					onClick: (row: Record<string, unknown>) => goto(`/clients/${row._id}/edit`)
+				},
+				{
+					label: 'Delete',
+					variant: 'danger' as const,
+					onClick: deleteClient
+				}
+			]
+		}
+	];
 </script>
 
 <svelte:head>
 	<title>Clients — Konta</title>
 </svelte:head>
+
+<!-- Hidden delete form -->
+<form method="POST" action="?/deleteClient" bind:this={deleteForm} use:enhance class="hidden">
+	<input type="hidden" name="clientId" bind:value={deleteClientId} />
+</form>
 
 <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
 	<div class="mb-6 flex items-center justify-between">
@@ -43,88 +82,36 @@
 		/>
 	</form>
 
-	{#if data.clients.length === 0}
-		<div class="py-16 text-center text-sm text-gray-500">
-			{#if data.search}
-				No clients match "{data.search}".
-			{:else}
-				No clients yet. <a href="/clients/new" class="text-blue-600 hover:underline"
-					>Add your first client.</a
-				>
-			{/if}
-		</div>
-	{:else}
-		<div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
-			<table class="w-full text-sm">
-				<thead class="border-b border-gray-200 bg-gray-50">
-					<tr>
-						<th class="px-4 py-3 text-left font-medium text-gray-700">Name</th>
-						<th class="hidden px-4 py-3 text-left font-medium text-gray-700 sm:table-cell"
-							>Tax ID</th
-						>
-						<th class="hidden px-4 py-3 text-left font-medium text-gray-700 sm:table-cell">Email</th
-						>
-						<th class="hidden px-4 py-3 text-left font-medium text-gray-700 sm:table-cell"
-							>Country</th
-						>
-						<th class="px-4 py-3"></th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-100">
-					{#each data.clients as client}
-						<tr class="transition-colors hover:bg-gray-50">
-							<td class="px-4 py-3 font-medium text-gray-900">{client.name}</td>
-							<td class="hidden px-4 py-3 text-gray-500 sm:table-cell">{client.taxId ?? '—'}</td>
-							<td class="hidden px-4 py-3 text-gray-500 sm:table-cell">{client.email ?? '—'}</td>
-							<td class="hidden px-4 py-3 text-gray-500 sm:table-cell">{client.country ?? '—'}</td>
-							<td class="px-4 py-3">
-								<div class="flex items-center justify-end gap-3">
-									<a
-										href="/clients/{client._id}/edit"
-										class="text-blue-600 transition-colors hover:text-blue-800">Edit</a
-									>
-									<form
-										method="POST"
-										action="?/deleteClient"
-										use:enhance={({ cancel }) => {
-											if (!confirm('Delete this client? This cannot be undone.')) cancel();
-										}}
-									>
-										<input type="hidden" name="clientId" value={client._id} />
-										<button type="submit" class="text-red-500 transition-colors hover:text-red-700"
-											>Delete</button
-										>
-									</form>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+	<DataTable
+		{columns}
+		data={data.clients as Record<string, unknown>[]}
+		onRowClick={(row) => goto(`/clients/${row._id}/edit`)}
+		emptyState={data.search
+			? { title: `No clients match "${data.search}".` }
+			: { title: 'No clients yet.', description: 'Add your first client to get started.' }}
+	/>
 
-		{#if data.totalPages > 1}
-			<div class="mt-4 flex items-center justify-between text-sm text-gray-500">
-				<span>
-					Showing {(data.page - 1) * 20 + 1}–{Math.min(data.page * 20, data.total)} of {data.total}
-				</span>
-				<div class="flex gap-2">
-					{#if data.page > 1}
-						<a
-							href={pageUrl(data.page - 1)}
-							class="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-50"
-							>Previous</a
-						>
-					{/if}
-					{#if data.page < data.totalPages}
-						<a
-							href={pageUrl(data.page + 1)}
-							class="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-50"
-							>Next</a
-						>
-					{/if}
-				</div>
+	{#if data.totalPages > 1}
+		<div class="mt-4 flex items-center justify-between text-sm text-gray-500">
+			<span>
+				Showing {(data.page - 1) * 20 + 1}–{Math.min(data.page * 20, data.total)} of {data.total}
+			</span>
+			<div class="flex gap-2">
+				{#if data.page > 1}
+					<a
+						href={pageUrl(data.page - 1)}
+						class="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-50"
+						>Previous</a
+					>
+				{/if}
+				{#if data.page < data.totalPages}
+					<a
+						href={pageUrl(data.page + 1)}
+						class="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-50"
+						>Next</a
+					>
+				{/if}
 			</div>
-		{/if}
+		</div>
 	{/if}
 </main>

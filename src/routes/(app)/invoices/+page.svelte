@@ -1,45 +1,88 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import DataTable from '$lib/components/DataTable.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	const statusColors = {
-		draft: 'bg-gray-100 text-gray-800',
-		scheduled: 'bg-blue-100 text-blue-800',
-		sent: 'bg-blue-100 text-blue-800',
-		paid: 'bg-green-100 text-green-800',
-		overdue: 'bg-red-100 text-red-800',
-		cancelled: 'bg-gray-100 text-gray-500'
-	};
-
-	function formatDate(dateString: string) {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
-	}
-
-	function formatCurrency(amount: number, currency: string) {
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency
-		}).format(amount);
-	}
-
 	function updateFilters() {
 		const form = document.querySelector('form[data-filter-form]') as HTMLFormElement;
-		if (form) {
-			form.submit();
-		}
+		if (form) form.submit();
 	}
 
 	let deleteInvoiceId = $state('');
 	let showDeleteModal = $state(false);
 
-	function confirmDelete(invoiceId: string) {
-		deleteInvoiceId = invoiceId;
+	function confirmDelete(row: Record<string, unknown>) {
+		deleteInvoiceId = String(row._id);
 		showDeleteModal = true;
+	}
+
+	const STATUS_BADGE_MAP: Record<string, string> = {
+		draft: 'gray',
+		scheduled: 'blue',
+		sent: 'blue',
+		paid: 'green',
+		overdue: 'red',
+		cancelled: 'gray'
+	};
+
+	const columns = [
+		{ key: 'number', label: 'Number', type: 'text' as const },
+		{ key: 'clientName', label: 'Client', type: 'text' as const },
+		{ key: 'status', label: 'Status', type: 'badge' as const, badgeMap: STATUS_BADGE_MAP },
+		{ key: 'issueDate', label: 'Issue Date', type: 'date' as const },
+		{ key: 'dueDate', label: 'Due Date', type: 'date' as const },
+		{ key: 'amount', label: 'Amount', type: 'text' as const, align: 'right' as const },
+		{
+			key: '_actions',
+			label: '',
+			type: 'actions' as const,
+			actions: [
+				{
+					label: 'View',
+					onClick: (row: Record<string, unknown>) => goto(`/invoices/${row._id}`)
+				},
+				{
+					label: 'Edit',
+					show: (row: Record<string, unknown>) =>
+						row.status === 'draft' || row.status === 'scheduled',
+					onClick: (row: Record<string, unknown>) => goto(`/invoices/${row._id}/edit`)
+				},
+				{
+					label: 'Download PDF',
+					onClick: (row: Record<string, unknown>) =>
+						window.open(`/api/invoices/${row._id}/pdf`, '_blank')
+				},
+				{
+					label: 'Delete',
+					variant: 'danger' as const,
+					show: (row: Record<string, unknown>) =>
+						row.status === 'draft' || row.status === 'cancelled',
+					onClick: confirmDelete
+				}
+			]
+		}
+	];
+
+	const rows = $derived(
+		data.invoices.map((inv) => ({
+			...inv,
+			clientName: inv.client?.name ?? 'N/A',
+			amount: new Intl.NumberFormat('en-US', {
+				style: 'currency',
+				currency: inv.currency
+			}).format(inv.totalAmount)
+		})) as Record<string, unknown>[]
+	);
+
+	function pageUrl(page: number) {
+		const params = new URLSearchParams();
+		if (data.filters.status) params.set('status', data.filters.status);
+		if (data.filters.clientId) params.set('clientId', data.filters.clientId);
+		if (data.filters.search) params.set('search', data.filters.search);
+		params.set('page', String(page));
+		return `?${params}`;
 	}
 </script>
 
@@ -115,182 +158,40 @@
 		</form>
 	</div>
 
-	<!-- Invoice Table -->
-	{#if data.invoices.length === 0}
-		<div class="rounded-lg bg-white p-12 text-center shadow">
-			<svg
-				class="mx-auto h-12 w-12 text-gray-400"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-				/>
-			</svg>
-			<h3 class="mt-2 text-sm font-medium text-gray-900">No invoices</h3>
-			<p class="mt-1 text-sm text-gray-500">Get started by creating your first invoice.</p>
-			<div class="mt-6">
-				<a
-					href="/invoices/new"
-					class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
-				>
-					Create Invoice
-				</a>
-			</div>
-		</div>
-	{:else}
-		<div class="overflow-hidden rounded-lg bg-white shadow">
-			<table class="min-w-full divide-y divide-gray-200">
-				<thead class="bg-gray-50">
-					<tr>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Number
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Client
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Status
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Issue Date
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Due Date
-						</th>
-						<th
-							scope="col"
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-						>
-							Amount
-						</th>
-						<th scope="col" class="relative px-6 py-3">
-							<span class="sr-only">Actions</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-200 bg-white">
-					{#each data.invoices as invoice (invoice._id)}
-						<tr>
-							<td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
-								<a href="/invoices/{invoice._id}" class="hover:text-indigo-600">
-									{invoice.number}
-								</a>
-							</td>
-							<td class="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-								{invoice.client?.name || 'N/A'}
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap">
-								<span
-									class="inline-flex rounded-full px-2 py-1 text-xs font-semibold {statusColors[
-										invoice.status
-									]}"
-								>
-									{invoice.status}
-								</span>
-							</td>
-							<td class="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-								{formatDate(invoice.issueDate)}
-							</td>
-							<td class="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-								{formatDate(invoice.dueDate)}
-							</td>
-							<td class="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
-								{formatCurrency(invoice.totalAmount, invoice.currency)}
-							</td>
-							<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-								<a href="/invoices/{invoice._id}" class="text-indigo-600 hover:text-indigo-900">
-									View
-								</a>
-								{#if invoice.status === 'draft' || invoice.status === 'scheduled'}
-									<a
-										href="/invoices/{invoice._id}/edit"
-										class="text-indigo-600 hover:text-indigo-900"
-									>
-										Edit
-									</a>
-								{/if}
-								<a
-									href="/api/invoices/{invoice._id}/pdf"
-									target="_blank"
-									title="Download PDF"
-									class="inline-flex items-center text-gray-500 hover:text-gray-700"
-								>
-									<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-									</svg>
-								</a>
-								{#if invoice.status === 'draft' || invoice.status === 'cancelled'}
-									<button
-										type="button"
-										onclick={() => confirmDelete(invoice._id)}
-										class="text-red-600 hover:text-red-900"
-									>
-										Delete
-									</button>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+	<DataTable
+		{columns}
+		data={rows}
+		onRowClick={(row) => goto(`/invoices/${row._id}`)}
+		emptyState={{
+			title: 'No invoices',
+			description: 'Get started by creating your first invoice.'
+		}}
+	/>
 
-		<!-- Pagination -->
-		{#if data.totalPages > 1}
-			<div class="mt-6 flex items-center justify-between">
-				<div class="text-sm text-gray-700">
-					Showing page {data.page} of {data.totalPages} ({data.total} total)
-				</div>
-				<div class="flex gap-2">
-					{#if data.page > 1}
-						<a
-							href="?page={data.page - 1}{data.filters.status
-								? `&status=${data.filters.status}`
-								: ''}{data.filters.clientId ? `&clientId=${data.filters.clientId}` : ''}{data
-								.filters.search
-								? `&search=${data.filters.search}`
-								: ''}"
-							class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-						>
-							Previous
-						</a>
-					{/if}
-					{#if data.page < data.totalPages}
-						<a
-							href="?page={data.page + 1}{data.filters.status
-								? `&status=${data.filters.status}`
-								: ''}{data.filters.clientId ? `&clientId=${data.filters.clientId}` : ''}{data
-								.filters.search
-								? `&search=${data.filters.search}`
-								: ''}"
-							class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-						>
-							Next
-						</a>
-					{/if}
-				</div>
+	{#if data.totalPages > 1}
+		<div class="mt-6 flex items-center justify-between">
+			<div class="text-sm text-gray-700">
+				Showing page {data.page} of {data.totalPages} ({data.total} total)
 			</div>
-		{/if}
+			<div class="flex gap-2">
+				{#if data.page > 1}
+					<a
+						href={pageUrl(data.page - 1)}
+						class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+					>
+						Previous
+					</a>
+				{/if}
+				{#if data.page < data.totalPages}
+					<a
+						href={pageUrl(data.page + 1)}
+						class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+					>
+						Next
+					</a>
+				{/if}
+			</div>
+		</div>
 	{/if}
 </div>
 
