@@ -37,6 +37,9 @@ const clientSchema = new Schema<IClient>(
 	{ timestamps: true }
 );
 
+// Optimizes the sorted list query (filter by org, sort by name)
+clientSchema.index({ orgId: 1, name: 1 });
+
 export const Client: Model<IClient> =
 	(mongoose.models.Client as Model<IClient>) ||
 	mongoose.model<IClient>('Client', clientSchema);

@@ -10,7 +10,7 @@
 	}
 
 	function customFieldValue(key: string) {
-		if (form?.values) return form.values[`customField_${key}`] ?? '';
+		if (form?.values) return form.values[`customFields[${key}]`] ?? '';
 		return data.client.customFields?.[key] ?? '';
 	}
 </script>
@@ -130,21 +130,21 @@
 							{#each data.org.customFieldDefs.client as field}
 								<div>
 									<label
-										for="customField_{field.key}"
+										for="customFields[{field.key}]"
 										class="mb-1.5 block text-sm font-medium text-gray-700">{field.label}</label
 									>
 									{#if field.type === 'textarea'}
 										<textarea
-											id="customField_{field.key}"
-											name="customField_{field.key}"
+											id="customFields[{field.key}]"
+											name="customFields[{field.key}]"
 											rows="3"
 											class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
 											>{customFieldValue(field.key)}</textarea
 										>
 									{:else}
 										<input
-											id="customField_{field.key}"
-											name="customField_{field.key}"
+											id="customFields[{field.key}]"
+											name="customFields[{field.key}]"
 											type={field.type}
 											value={customFieldValue(field.key)}
 											class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"

@@ -92,9 +92,20 @@ export async function updateClient(
 		throw new Error('Client not found');
 	}
 
+	// Build the $set payload: regular fields go in directly, customFields are
+	// spread as dotted paths so only the provided keys are updated (not a full replace).
+	const { customFields, ...rest } = data;
+	const setPayload: Record<string, unknown> = { ...rest };
+
+	if (customFields) {
+		for (const [key, value] of Object.entries(customFields)) {
+			setPayload[`customFields.${key}`] = value;
+		}
+	}
+
 	const client = await Client.findOneAndUpdate(
 		{ _id: clientId, orgId },
-		{ $set: data },
+		{ $set: setPayload },
 		{ returnDocument: 'after' }
 	).lean();
 

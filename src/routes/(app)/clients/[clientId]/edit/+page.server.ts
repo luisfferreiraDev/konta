@@ -53,8 +53,8 @@ export const actions: Actions = {
 
 		const customFields: Record<string, unknown> = {};
 		for (const [key, value] of formData.entries()) {
-			if (key.startsWith('customField_') && value) {
-				customFields[key.slice('customField_'.length)] = value;
+			if (key.startsWith('customFields[') && key.endsWith(']') && value && typeof value === 'string') {
+				customFields[key.slice('customFields['.length, -1)] = value;
 			}
 		}
 
