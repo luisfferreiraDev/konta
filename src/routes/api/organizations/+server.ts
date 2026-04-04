@@ -6,7 +6,7 @@ import { requireAuth } from '$lib/server/auth-guard';
 import { setActiveOrg } from '$lib/server/org-context';
 
 export const POST: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	const user = await requireAuth(event);
 
 	let body: unknown;
 	try {
@@ -28,7 +28,7 @@ export const POST: RequestHandler = async (event) => {
 };
 
 export const GET: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	const user = await requireAuth(event);
 
 	const memberships = await Membership.find({ userId: user.id });
 	const orgIds = memberships.map((m) => m.orgId);
