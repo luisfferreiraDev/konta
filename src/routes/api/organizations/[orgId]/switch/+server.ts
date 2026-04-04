@@ -5,7 +5,7 @@ import { setActiveOrg } from '$lib/server/org-context';
 import mongoose from 'mongoose';
 
 export const POST: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	await requireAuth(event);
 	const { orgId } = event.params;
 
 	if (!mongoose.isValidObjectId(orgId)) error(404, 'Organization not found');

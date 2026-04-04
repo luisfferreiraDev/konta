@@ -13,7 +13,7 @@ function resolveOrgId(params: Record<string, string>) {
 }
 
 export const GET: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	const user = await requireAuth(event);
 	const orgId = resolveOrgId(event.params);
 
 	const membership = await Membership.findOne({ userId: user.id, orgId });
@@ -26,7 +26,7 @@ export const GET: RequestHandler = async (event) => {
 };
 
 export const PATCH: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	const user = await requireAuth(event);
 	const orgId = resolveOrgId(event.params);
 
 	const membership = await Membership.findOne({ userId: user.id, orgId });
@@ -52,7 +52,7 @@ export const PATCH: RequestHandler = async (event) => {
 };
 
 export const DELETE: RequestHandler = async (event) => {
-	const user = requireAuth(event);
+	const user = await requireAuth(event);
 	const orgId = resolveOrgId(event.params);
 
 	const membership = await Membership.findOne({ userId: user.id, orgId });

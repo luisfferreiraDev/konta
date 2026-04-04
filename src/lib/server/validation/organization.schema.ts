@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-const customFieldDefSchema = z.object({
+export const customFieldDefSchema = z.object({
 	key: z
 		.string()
 		.min(1)
-		.regex(/^[a-z_][a-z0-9_]*$/, 'Key must be snake_case'),
+		.regex(/^[a-z_][a-z0-9_]*$/, 'Key must be snake_case (lowercase letters, digits, underscores)'),
 	label: z.string().min(1).max(100),
 	type: z.enum(['text', 'textarea', 'number', 'date'])
 });
@@ -38,6 +38,15 @@ export const templateSettingsSchema = z.object({
 	font: z.string().min(1).default('inter')
 });
 
+export const updateTemplateSettingsSchema = z.object({
+	accentColor: z
+		.string()
+		.regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color')
+		.optional(),
+	showQrCode: z.boolean().optional(),
+	font: z.string().min(1).optional()
+});
+
 export const customFieldDefsSchema = z.object({
 	invoice: z.array(customFieldDefSchema).default([]),
 	client: z.array(customFieldDefSchema).default([])
@@ -46,4 +55,6 @@ export const customFieldDefsSchema = z.object({
 export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;
 export type UpdateOrganizationInput = z.infer<typeof updateOrganizationSchema>;
 export type TemplateSettingsInput = z.infer<typeof templateSettingsSchema>;
+export type UpdateTemplateSettingsInput = z.infer<typeof updateTemplateSettingsSchema>;
 export type CustomFieldDefsInput = z.infer<typeof customFieldDefsSchema>;
+export type CustomFieldDefInput = z.infer<typeof customFieldDefSchema>;
