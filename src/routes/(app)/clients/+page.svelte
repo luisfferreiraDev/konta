@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import DataTable from '$lib/components/DataTable.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -17,9 +18,8 @@
 	}
 
 	function deleteClient(row: Record<string, unknown>) {
-		if (!confirm('Delete this client? This cannot be undone.')) return;
 		deleteClientId = String(row._id);
-		Promise.resolve().then(() => deleteForm.requestSubmit());
+		deleteModal?.toggle();
 	}
 
 	const columns = [
@@ -44,13 +44,25 @@
 			]
 		}
 	];
+
+	let deleteModal = $state<Modal | null>(null);
 </script>
 
 <svelte:head>
 	<title>Clients — Konta</title>
 </svelte:head>
 
-<!-- Hidden delete form -->
+<Modal bind:this={deleteModal} onclose={() => (deleteClientId = '')}>
+	<h2>Delete Client</h2>
+	<p>Are you sure you want to delete this client? This action cannot be undone.</p>
+	<button
+		onclick={() => {
+			deleteForm.requestSubmit();
+			deleteModal?.hide();
+		}}>Delete</button
+	>
+</Modal>
+
 <form method="POST" action="?/deleteClient" bind:this={deleteForm} use:enhance class="hidden">
 	<input type="hidden" name="clientId" bind:value={deleteClientId} />
 </form>
