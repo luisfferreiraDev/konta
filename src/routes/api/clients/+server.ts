@@ -3,13 +3,13 @@ import type { RequestHandler } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
 import { createClientSchema } from '$lib/server/validation';
 import { listClients, createClient } from '$lib/server/services/client.service';
+import { parsePaginationParams } from '$lib/server/utils/form-utils';
 
 export const GET: RequestHandler = async (event) => {
 	const { org } = await requireOrg(event);
 
 	const search = event.url.searchParams.get('search') ?? '';
-	const page = parseInt(event.url.searchParams.get('page') ?? '1');
-	const limit = parseInt(event.url.searchParams.get('limit') ?? '20');
+	const { page, limit } = parsePaginationParams(event.url.searchParams);
 
 	const result = await listClients(org._id, { search, page, limit });
 
