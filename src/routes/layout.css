@@ -47,4 +47,12 @@
 		font-feature-settings: 'zero' 1;
 		font-variant-numeric: slashed-zero;
 	}
+
+	body {
+		background-color: #f9fafb;
+		background-image:
+			linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+			linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+		background-size: 32px 32px;
+	}
 }

@@ -11,7 +11,7 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen">
 	<header class="border-b border-gray-200 bg-white">
 		<div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
 			<div class="flex items-center gap-6">
