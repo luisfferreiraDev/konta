@@ -1,42 +1,69 @@
-# sv
+# Konta
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Konta (/ˈkɔn.tɑ/) is a self-hosted invoice generator built with SvelteKit. The name derives from *conta*, the Portuguese word for bill.
 
-## Creating a project
+It is designed for individuals and small teams who want full control over their invoicing data without relying on third-party services.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
 
-```sh
-# create a new project
-npx sv create my-app
+- **Invoice creation and PDF export** — generate professional invoices and export them as PDFs via Puppeteer
+- **Custom fields** — define your own fields per invoice to capture data beyond standard layouts: tax IDs, project references, purchase order numbers, or any domain-specific information your workflow requires
+- **Authentication** — secure access via better-auth
+- **Data validation** — runtime validation with Zod throughout
+- **Self-hosted, privacy-first** — your invoice data stays on your infrastructure
+
+The custom fields system is the core differentiator. Rather than being locked into a fixed invoice template, you can extend invoices with arbitrary structured data, making Konta adaptable to different business contexts and regional requirements.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | SvelteKit (Svelte 5), TypeScript |
+| Styling | Tailwind CSS v4 |
+| Database | MongoDB with Mongoose |
+| Authentication | better-auth |
+| PDF generation | Puppeteer |
+| Validation | Zod |
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- A running MongoDB instance
+
+### Environment Setup
+
+Copy the example environment file and fill in the required values:
+
+```bash
+cp .env.example .env
 ```
 
-To recreate this project with the same configuration:
+Open `.env` and configure the variables — at minimum you will need a MongoDB connection string and the authentication secret.
 
-```sh
-# recreate this project
-pnpm dlx sv@0.13.2 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" tailwindcss="plugins:none" --install pnpm konta
+### Install
+
+```bash
+pnpm install
 ```
 
-## Developing
+### Development
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+pnpm dev
 ```
 
-## Building
+### Production Build
 
-To create a production version of your app:
-
-```sh
-npm run build
+```bash
+pnpm build
+pnpm preview
 ```
 
-You can preview the production build with `npm run preview`.
+To run in production, build the application and serve it with the appropriate SvelteKit adapter for your environment. Refer to the [SvelteKit deployment documentation](https://kit.svelte.dev/docs/adapters) for adapter options.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## License
+
+Konta is released under the [MIT License](LICENSE).
