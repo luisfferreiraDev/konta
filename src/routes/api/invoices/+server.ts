@@ -4,7 +4,18 @@ import { requireOrg } from '$lib/server/auth-guard';
 import { Invoice } from '$lib/server/models';
 import { createInvoiceSchema } from '$lib/server/validation/invoice.schema';
 import { createInvoice } from '$lib/server/services/invoice.service';
+import { getErrorMessage, parsePaginationParams } from '$lib/server/utils/form-utils';
 import mongoose from 'mongoose';
+
+const VALID_STATUSES = ['draft', 'scheduled', 'sent', 'paid', 'overdue', 'cancelled'];
+const ALLOWED_SORT_FIELDS = new Set([
+	'issueDate', '-issueDate',
+	'dueDate', '-dueDate',
+	'number', '-number',
+	'totalAmount', '-totalAmount',
+	'status', '-status',
+	'createdAt', '-createdAt'
+]);
 
 // POST /api/invoices - Create invoice
 export const POST: RequestHandler = async (event) => {
@@ -22,7 +33,7 @@ export const POST: RequestHandler = async (event) => {
 	if (!parsed.success) {
 		return json(
 			{ error: 'Validation failed', errors: parsed.error.flatten().fieldErrors },
-			{ status: 400 }
+			{ status: 422 }
 		);
 	}
 
@@ -33,7 +44,7 @@ export const POST: RequestHandler = async (event) => {
 		});
 		return json(invoice, { status: 201 });
 	} catch (err) {
-		const message = err instanceof Error ? err.message : 'Failed to create invoice';
+		const message = getErrorMessage(err, 'Failed to create invoice');
 		const status = message.includes('not found') ? 404 : 400;
 		return json({ error: message }, { status });
 	}
@@ -47,12 +58,14 @@ export const GET: RequestHandler = async (event) => {
 	const status = url.searchParams.get('status');
 	const clientId = url.searchParams.get('clientId');
 	const search = url.searchParams.get('search') || '';
-	const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
-	const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get('limit') || '20')));
-	const sort = url.searchParams.get('sort') || '-issueDate';
-	const skip = (page - 1) * limit;
+	const { page, limit, skip } = parsePaginationParams(url.searchParams);
 
-	const VALID_STATUSES = ['draft', 'scheduled', 'sent', 'paid', 'overdue', 'cancelled'];
+	const rawSort = url.searchParams.get('sort') || '-issueDate';
+	if (!ALLOWED_SORT_FIELDS.has(rawSort)) {
+		error(400, 'Invalid sort field');
+	}
+	const sort = rawSort;
+
 	if (status && !VALID_STATUSES.includes(status)) {
 		error(400, 'Invalid status value');
 	}

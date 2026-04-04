@@ -3,18 +3,14 @@ import type { Actions } from './$types';
 import { requireOrg } from '$lib/server/auth-guard';
 import { createClientSchema } from '$lib/server/validation';
 import { createClient } from '$lib/server/services/client.service';
+import { parseCustomFields, getErrorMessage } from '$lib/server/utils/form-utils';
 
 export const actions: Actions = {
 	default: async (event) => {
 		const { org } = await requireOrg(event);
 		const formData = await event.request.formData();
 
-		const customFields: Record<string, unknown> = {};
-		for (const [key, value] of formData.entries()) {
-			if (key.startsWith('customFields[') && key.endsWith(']') && value && typeof value === 'string') {
-				customFields[key.slice('customFields['.length, -1)] = value;
-			}
-		}
+		const customFields = parseCustomFields(formData);
 
 		const parsed = createClientSchema.safeParse({
 			name: formData.get('name') as string,
@@ -36,7 +32,7 @@ export const actions: Actions = {
 		try {
 			await createClient(org._id, parsed.data);
 		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to create client';
+			const message = getErrorMessage(err, 'Failed to create client');
 			return fail(400, { errors: { _form: [message] }, values: Object.fromEntries(formData) });
 		}
 

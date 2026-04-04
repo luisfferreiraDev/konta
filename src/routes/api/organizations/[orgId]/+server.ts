@@ -59,12 +59,16 @@ export const DELETE: RequestHandler = async (event) => {
 	if (!membership) error(404, 'Organization not found');
 	if (membership.role !== 'owner') error(403, 'Insufficient permissions');
 
-	await Promise.all([
-		Organization.findByIdAndDelete(orgId),
-		Membership.deleteMany({ orgId }),
-		Client.deleteMany({ orgId }),
-		Invoice.deleteMany({ orgId })
-	]);
+	try {
+		await Promise.all([
+			Organization.findByIdAndDelete(orgId),
+			Membership.deleteMany({ orgId }),
+			Client.deleteMany({ orgId }),
+			Invoice.deleteMany({ orgId })
+		]);
+	} catch {
+		error(500, 'Failed to delete organization. Some data may not have been removed.');
+	}
 
 	const activeCookieOrgId = event.cookies.get('activeOrgId');
 	if (activeCookieOrgId === orgId) {

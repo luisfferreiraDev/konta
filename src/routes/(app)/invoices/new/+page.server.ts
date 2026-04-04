@@ -4,6 +4,7 @@ import { requireOrg } from '$lib/server/auth-guard';
 import { Client } from '$lib/server/models';
 import { createInvoiceSchema } from '$lib/server/validation/invoice.schema';
 import { createInvoice } from '$lib/server/services/invoice.service';
+import { parseLineItems, parseCustomFields, parseTaxRateField, getErrorMessage } from '$lib/server/utils/form-utils';
 
 export const load: PageServerLoad = async (event) => {
 	const { org } = await requireOrg(event);
@@ -28,59 +29,22 @@ export const actions: Actions = {
 		const { org } = await requireOrg(event);
 		const formData = await event.request.formData();
 
-		// Parse line items from form data
-		const lineItems = [];
-		let lineIndex = 0;
-		while (formData.has(`lineItems[${lineIndex}][description]`)) {
-			const description = formData.get(`lineItems[${lineIndex}][description]`) as string;
-			const qty = parseFloat(formData.get(`lineItems[${lineIndex}][qty]`) as string);
-			const unitPrice = parseFloat(formData.get(`lineItems[${lineIndex}][unitPrice]`) as string);
-			const taxRateValue = formData.get(`lineItems[${lineIndex}][taxRate]`);
-
-			const lineItem: { description: string; qty: number; unitPrice: number; taxRate: number } = {
-				description,
-				qty,
-				unitPrice,
-				taxRate:
-					taxRateValue && typeof taxRateValue === 'string' && taxRateValue.trim() !== ''
-						? parseFloat(taxRateValue) / 100
-						: 0
-			};
-
-			lineItems.push(lineItem);
-			lineIndex++;
-		}
-
-		// Parse custom fields
-		const customFields: Record<string, string | number> = {};
-		const customFieldDefs = org.customFieldDefs?.invoice || [];
-		for (const fieldDef of customFieldDefs) {
-			const value = formData.get(`customFields[${fieldDef.key}]`);
-			if (value && typeof value === 'string') {
-				customFields[fieldDef.key] = value;
-			}
-		}
+		const lineItems = parseLineItems(formData);
+		const customFields = parseCustomFields(formData);
 
 		const raw = {
 			clientId: formData.get('clientId') as string,
 			issueDate: formData.get('issueDate') as string,
 			dueDate: formData.get('dueDate') as string,
 			currency: (formData.get('currency') as string) || org.currency,
-			taxRate: (() => {
-				const value = formData.get('taxRate');
-				if (value && typeof value === 'string' && value.trim() !== '') {
-					return parseFloat(value) / 100;
-				}
-				return 0;
-			})(),
+			taxRate: parseTaxRateField(formData.get('taxRate')),
 			lineItems,
 			customFields
 		};
 
 		const parsed = createInvoiceSchema.safeParse(raw);
 		if (!parsed.success) {
-			console.error('Validation failed:', parsed.error.flatten());
-			return fail(400, { errors: parsed.error.flatten().fieldErrors, values: raw });
+			return fail(422, { errors: parsed.error.flatten().fieldErrors, values: raw });
 		}
 
 		try {
@@ -89,9 +53,10 @@ export const actions: Actions = {
 				defaultTaxRate: org.defaultTaxRate
 			});
 		} catch (err) {
-			console.error('Create invoice error:', err);
-			const message = err instanceof Error ? err.message : 'Failed to create invoice';
-			return fail(400, { errors: { _form: [message] }, values: raw });
+			return fail(400, {
+				errors: { _form: [getErrorMessage(err, 'Failed to create invoice')] },
+				values: raw
+			});
 		}
 
 		redirect(303, '/invoices');
