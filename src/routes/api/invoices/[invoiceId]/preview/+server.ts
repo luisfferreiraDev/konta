@@ -29,7 +29,7 @@ export const GET: RequestHandler = async (event) => {
 		error(404, 'Organization not found');
 	}
 
-	const html = renderInvoiceHTML({ invoice, organization });
+	const html = renderInvoiceHTML({ invoice, organization, preview: true });
 
 	return new Response(html, {
 		headers: { 'Content-Type': 'text/html; charset=utf-8' }
