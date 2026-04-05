@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import type { PageData } from './$types';
+	import { routes } from '$lib/routes';
 
 	let { data }: { data: PageData } = $props();
 
@@ -41,18 +42,18 @@
 			actions: [
 				{
 					label: 'View',
-					onClick: (row: Record<string, unknown>) => goto(`/invoices/${row._id}`)
+					onClick: (row: Record<string, unknown>) => goto(routes.invoices.view(String(row._id)))
 				},
 				{
 					label: 'Edit',
 					show: (row: Record<string, unknown>) =>
 						row.status === 'draft' || row.status === 'scheduled',
-					onClick: (row: Record<string, unknown>) => goto(`/invoices/${row._id}/edit`)
+					onClick: (row: Record<string, unknown>) => goto(routes.invoices.edit(String(row._id)))
 				},
 				{
 					label: 'Download PDF',
 					onClick: (row: Record<string, unknown>) =>
-						window.open(`/api/invoices/${row._id}/pdf`, '_blank')
+						window.open(routes.api.invoicePdf(String(row._id)), '_blank')
 				},
 				{
 					label: 'Delete',
@@ -98,7 +99,7 @@
 		</div>
 		<div class="mt-4 sm:mt-0">
 			<a
-				href="/invoices/new"
+				href={routes.invoices.new()}
 				class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
 			>
 				New Invoice
@@ -161,7 +162,7 @@
 	<DataTable
 		{columns}
 		data={rows}
-		onRowClick={(row) => goto(`/invoices/${row._id}`)}
+		onRowClick={(row) => goto(routes.invoices.view(String(row._id)))}
 		emptyState={{
 			title: 'No invoices',
 			description: 'Get started by creating your first invoice.'

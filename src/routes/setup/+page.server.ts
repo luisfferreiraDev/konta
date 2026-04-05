@@ -2,11 +2,12 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
 import { auth } from '$lib/server/auth';
+import { routes } from '$lib/routes';
 
 export const load: PageServerLoad = async () => {
 	const count = await db.collection('user').countDocuments();
 	if (count > 0) {
-		redirect(302, '/login');
+		redirect(302, routes.auth.login());
 	}
 	return {};
 };
@@ -32,7 +33,7 @@ export const actions: Actions = {
 		// Guard against race condition
 		const count = await db.collection('user').countDocuments();
 		if (count > 0) {
-			redirect(302, '/login');
+			redirect(302, routes.auth.login());
 		}
 
 		try {
@@ -41,6 +42,6 @@ export const actions: Actions = {
 			return fail(500, { error: 'Failed to create account. Please try again.' });
 		}
 
-		redirect(302, '/login');
+		redirect(302, routes.auth.login());
 	}
 };

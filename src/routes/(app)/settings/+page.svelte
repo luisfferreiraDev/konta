@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
+	import { routes } from '$lib/routes';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -215,7 +216,7 @@
 		try {
 			const res = await fetch(`/api/organizations/${data.org._id}`, { method: 'DELETE' });
 			if (res.ok || res.status === 204) {
-				window.location.href = '/onboarding';
+				window.location.href = routes.auth.onboarding();
 			} else {
 				deleteOrgError = 'Failed to delete organization.';
 			}

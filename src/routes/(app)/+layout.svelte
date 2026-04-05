@@ -2,12 +2,13 @@
 	import { authClient } from '$lib/auth-client';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { routes } from '$lib/routes';
 
 	let { data, children } = $props();
 
 	async function logout() {
 		await authClient.signOut();
-		goto('/login');
+		goto(routes.auth.login());
 	}
 </script>
 
@@ -18,13 +19,13 @@
 				<span class="font-bold text-gray-900">Konta</span>
 				<nav class="flex gap-4 text-sm">
 					<a
-						href="/clients"
+						href={routes.clients.list()}
 						class="{page.url.pathname.startsWith('/clients')
 							? 'font-medium text-gray-900'
 							: 'text-gray-500 hover:text-gray-800'} transition-colors">Clients</a
 					>
 					<a
-						href="/invoices"
+						href={routes.invoices.list()}
 						class="{page.url.pathname.startsWith('/invoices')
 							? 'font-medium text-gray-900'
 							: 'text-gray-500 hover:text-gray-800'} transition-colors">Invoices</a
@@ -35,7 +36,7 @@
 				<span class="text-gray-500">{data.org.name}</span>
 				{#if data.membership.role === 'owner'}
 					<a
-						href="/settings"
+						href={routes.settings.index()}
 						class="{page.url.pathname.startsWith('/settings')
 							? 'text-gray-900'
 							: 'text-gray-400 hover:text-gray-700'} transition-colors"

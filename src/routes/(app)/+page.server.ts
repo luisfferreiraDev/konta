@@ -4,16 +4,17 @@ import { auth } from '$lib/server/auth';
 import { Membership, Organization } from '$lib/server/models';
 import { setActiveOrg } from '$lib/server/org-context';
 import { db } from '$lib/server/db';
+import { routes } from '$lib/routes';
 
 export const load: PageServerLoad = async (event) => {
 	const { locals } = event;
 	if (!locals.user) {
 		const count = await db.collection('user').countDocuments();
-		redirect(302, count === 0 ? '/setup' : '/login');
+		redirect(302, count === 0 ? routes.auth.setup() : routes.auth.login());
 	}
 
 	const memberships = await Membership.find({ userId: locals.user.id });
-	if (memberships.length === 0) redirect(302, '/onboarding');
+	if (memberships.length === 0) redirect(302, routes.auth.onboarding());
 
 	let activeOrg = locals.activeOrg;
 
@@ -54,6 +55,6 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	logout: async ({ request }) => {
 		await auth.api.signOut({ headers: request.headers });
-		redirect(302, '/login');
+		redirect(302, routes.auth.login());
 	}
 };

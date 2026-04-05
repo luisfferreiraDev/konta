@@ -4,6 +4,7 @@
 	import DataTable from '$lib/components/DataTable.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import type { PageData, ActionData } from './$types';
+	import { routes } from '$lib/routes';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -34,7 +35,7 @@
 			actions: [
 				{
 					label: 'Edit',
-					onClick: (row: Record<string, unknown>) => goto(`/clients/${row._id}/edit`)
+					onClick: (row: Record<string, unknown>) => goto(routes.clients.edit(String(row._id)))
 				},
 				{
 					label: 'Delete',
@@ -71,7 +72,7 @@
 	<div class="mb-6 flex items-center justify-between">
 		<h1 class="text-2xl font-semibold text-gray-900">Clients</h1>
 		<a
-			href="/clients/new"
+			href={routes.clients.new()}
 			class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
 		>
 			New Client
@@ -97,7 +98,7 @@
 	<DataTable
 		{columns}
 		data={data.clients as Record<string, unknown>[]}
-		onRowClick={(row) => goto(`/clients/${row._id}/edit`)}
+		onRowClick={(row) => goto(routes.clients.edit(String(row._id)))}
 		emptyState={data.search
 			? { title: `No clients match "${data.search}".` }
 			: { title: 'No clients yet.', description: 'Add your first client to get started.' }}

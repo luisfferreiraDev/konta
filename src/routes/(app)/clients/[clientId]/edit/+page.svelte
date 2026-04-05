@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
+	import { routes } from '$lib/routes';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let loading = $state(false);
@@ -21,7 +22,7 @@
 
 <main class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
 	<div class="mb-6">
-		<a href="/clients" class="text-sm text-gray-500 transition-colors hover:text-gray-800"
+		<a href={routes.clients.list()} class="text-sm text-gray-500 transition-colors hover:text-gray-800"
 			>← Clients</a
 		>
 		<h1 class="mt-2 text-2xl font-semibold text-gray-900">Edit Client</h1>
@@ -165,7 +166,7 @@
 				>
 					{loading ? 'Saving…' : 'Save Changes'}
 				</button>
-				<a href="/clients" class="text-sm text-gray-500 transition-colors hover:text-gray-800"
+				<a href={routes.clients.list()} class="text-sm text-gray-500 transition-colors hover:text-gray-800"
 					>Cancel</a
 				>
 			</div>

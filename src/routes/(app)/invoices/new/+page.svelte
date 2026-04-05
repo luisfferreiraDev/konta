@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
+	import { routes } from '$lib/routes';
 
 	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
@@ -330,7 +331,7 @@
 		<!-- Actions -->
 		<div class="flex items-center justify-end gap-3">
 			<a
-				href="/invoices"
+				href={routes.invoices.list()}
 				class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
 			>
 				Cancel

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import { enhance } from '$app/forms';
+	import { routes } from '$lib/routes';
 
 	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
@@ -63,7 +64,7 @@
 				</div>
 			</div>
 			<a
-				href="/invoices"
+				href={routes.invoices.list()}
 				class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 			>
 				Back to Invoices
@@ -216,7 +217,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<a
-				href="/api/invoices/{data.invoice._id}/pdf"
+				href={routes.api.invoicePdf(data.invoice._id)}
 				target="_blank"
 				class="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 			>
@@ -226,7 +227,7 @@
 				Download PDF
 			</a>
 			<a
-				href="/api/invoices/{data.invoice._id}/preview"
+				href={routes.api.invoicePreview(data.invoice._id)}
 				target="_blank"
 				class="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 			>
@@ -238,7 +239,7 @@
 			</a>
 			{#if data.invoice.status === 'draft'}
 				<a
-					href="/invoices/{data.invoice._id}/edit"
+					href={routes.invoices.edit(data.invoice._id)}
 					class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 				>
 					Edit
@@ -268,7 +269,7 @@
 
 			{#if data.invoice.status === 'scheduled'}
 				<a
-					href="/invoices/{data.invoice._id}/edit"
+					href={routes.invoices.edit(data.invoice._id)}
 					class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 				>
 					Edit
