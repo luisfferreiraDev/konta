@@ -16,6 +16,7 @@
 		LogOut
 	} from '@lucide/svelte';
 	import Dropdown from '$lib/components/Dropdown.svelte';
+	import ToastContainer from '$lib/components/toast/ToastContainer.svelte';
 
 	let { data, children } = $props();
 	let sidebarExpanded = $state(false);
@@ -38,6 +39,8 @@
 
 	const userInitials = data.user.name.slice(0, 2).toUpperCase();
 </script>
+
+<ToastContainer />
 
 <!-- ─── Root layout ────────────────────────────────────────────────────────── -->
 <div class="mx-auto flex h-dvh max-w-400 flex-col md:h-auto md:min-h-screen md:flex-row">
