@@ -36,7 +36,7 @@
 </script>
 
 <!-- ─── Root layout ────────────────────────────────────────────────────────── -->
-<div class="mx-auto flex min-h-screen max-w-400">
+<div class="mx-auto flex h-dvh max-w-400 flex-col md:h-auto md:min-h-screen md:flex-row">
 	<!-- ─── Desktop sidebar ──────────────────────────────────────────────────── -->
 	<aside
 		class="sticky top-0 hidden h-screen shrink-0 flex-col gap-2 px-2 py-2
@@ -190,7 +190,7 @@
 	</aside>
 
 	<!-- ─── Content area (shifts right with sidebar) ─────────────────────────── -->
-	<div class="flex min-h-screen flex-1 flex-col pb-16 md:pb-0">
+	<div class="flex min-h-0 flex-1 flex-col md:min-h-screen">
 		<!-- ─── Top header ──────────────────────────────────────────────────────── -->
 		<header class="sticky top-0 z-30 flex items-center justify-between px-2 py-2">
 			<!-- mobile: logo -->
@@ -231,13 +231,13 @@
 		</header>
 
 		<!-- ─── Page content ────────────────────────────────────────────────────── -->
-		<main class="mr-2 flex-1 overflow-auto px-4 pb-6 md:px-6">
+		<main class="mr-2 flex-1 overflow-x-hidden overflow-y-auto px-4 pb-6 md:px-6">
 			{@render children()}
 		</main>
 	</div>
 
 	<!-- ─── Mobile bottom nav ────────────────────────────────────────────────── -->
-	<nav class="border-border fixed right-0 bottom-0 left-0 z-40 border-t glass md:hidden">
+	<nav class="border-border shrink-0 border-t glass md:hidden">
 		<div class="flex h-16 items-center justify-around px-2">
 			{#each sideMenu as item (item.label)}
 				{@const Icon = item.icon}
