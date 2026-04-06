@@ -148,20 +148,20 @@
 	// ─── Style helpers ────────────────────────────────────────────────────────────
 
 	const BADGE_CLASSES: Record<string, string> = {
-		green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-		red: 'bg-red-50 text-red-700 border-red-200',
-		blue: 'bg-blue-50 text-blue-700 border-blue-200',
-		gray: 'bg-gray-100 text-gray-600 border-gray-200',
-		yellow: 'bg-amber-50 text-amber-700 border-amber-200',
-		purple: 'bg-purple-50 text-purple-700 border-purple-200',
-		orange: 'bg-orange-50 text-orange-700 border-orange-200',
-		pink: 'bg-pink-50 text-pink-700 border-pink-200',
-		teal: 'bg-teal-50 text-teal-700 border-teal-200',
-		indigo: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+		green: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/25',
+		red: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/25',
+		blue: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-500/25',
+		gray: 'bg-surface-raised text-secondary border-border',
+		yellow: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/25',
+		purple: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-500/15 dark:text-purple-400 dark:border-purple-500/25',
+		orange: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-400 dark:border-orange-500/25',
+		pink: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-500/15 dark:text-pink-400 dark:border-pink-500/25',
+		teal: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/15 dark:text-teal-400 dark:border-teal-500/25',
+		indigo: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/15 dark:text-indigo-400 dark:border-indigo-500/25'
 	};
 
 	function badgeClass(color: string): string {
-		return BADGE_CLASSES[color] ?? 'bg-gray-100 text-gray-600 border-gray-200';
+		return BADGE_CLASSES[color] ?? 'bg-surface-raised text-secondary border-border';
 	}
 
 	function cellAlign(col: ColumnDefinition): 'left' | 'center' | 'right' {
@@ -181,9 +181,7 @@
 <svelte:window onclick={closeDropdown} onkeydown={handleWindowKeydown} />
 
 <!-- ─── Table container ──────────────────────────────────────────────────────── -->
-<div
-	class="relative overflow-x-auto rounded-xl border border-gray-200/60 bg-white/60 shadow-sm backdrop-blur-sm"
->
+<div class="relative overflow-x-auto rounded-xl glass">
 	<table class="w-full min-w-full border-collapse text-sm">
 		<!-- ─── Header ─────────────────────────────────────────────────────────── -->
 		<thead>
@@ -194,11 +192,11 @@
 					<th
 						scope="col"
 						style={col.width ? `width: ${col.width}` : undefined}
-						class="sticky top-0 z-10 border-b border-gray-200/70 bg-white/90 px-4 py-3 text-xs font-semibold tracking-wider backdrop-blur-md
+						class="sticky top-0 z-10 border-b border-border bg-surface px-4 py-3 text-xs font-semibold tracking-wider backdrop-blur-md
 							{ALIGN_CLASS[align]}
 							{col.sortable ? 'cursor-pointer select-none' : ''}
-							{isActive ? 'text-gray-900' : 'text-gray-400'}
-							{col.sortable && !isActive ? 'hover:text-gray-600' : ''}
+							{isActive ? 'text-primary' : 'text-muted'}
+							{col.sortable && !isActive ? 'hover:text-secondary' : ''}
 							transition-colors duration-150"
 						onclick={col.sortable ? () => handleSort(col) : undefined}
 						onkeydown={col.sortable
@@ -225,7 +223,7 @@
 							{#if col.sortable}
 								<span
 									class="shrink-0 transition-opacity duration-150
-										{isActive ? 'opacity-100 text-gray-700' : 'opacity-25'}"
+										{isActive ? 'opacity-100 text-primary' : 'opacity-25'}"
 									aria-hidden="true"
 								>
 									{#if isActive && sortDirection === 'asc'}
@@ -285,12 +283,12 @@
 			{#if loading}
 				<!-- Skeleton -->
 				{#each { length: SKELETON_ROWS } as _, i}
-					<tr class="border-b border-gray-100/80 last:border-b-0" aria-hidden="true">
+					<tr class="border-b border-subtle last:border-b-0" aria-hidden="true">
 						{#each columns as col}
 							{@const align = cellAlign(col)}
 							<td class="px-4 py-3.5 {ALIGN_CLASS[align]}">
 								<div
-									class="h-3.5 animate-pulse rounded-md bg-gray-100"
+									class="h-3.5 animate-pulse rounded-md bg-surface-raised"
 									style="
 										width: {col.type === 'actions'
 										? '24px'
@@ -314,7 +312,7 @@
 					<td colspan={columns.length} class="px-6 py-16 text-center">
 						<div class="flex flex-col items-center gap-3">
 							<div
-								class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 text-gray-300"
+								class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-raised text-muted"
 							>
 								<svg
 									width="22"
@@ -331,11 +329,11 @@
 									<path d="M3 9h18M9 21V9" />
 								</svg>
 							</div>
-							<p class="text-sm font-medium text-gray-700">
+							<p class="text-sm font-medium text-primary">
 								{emptyState?.title ?? 'No data'}
 							</p>
 							{#if emptyState?.description}
-								<p class="max-w-xs text-xs text-gray-400">{emptyState.description}</p>
+								<p class="max-w-xs text-xs text-muted">{emptyState.description}</p>
 							{/if}
 						</div>
 					</td>
@@ -344,8 +342,8 @@
 				<!-- Data rows -->
 				{#each data as row, rowIndex}
 					<tr
-						class="group border-b border-gray-100/80 transition-colors duration-150 last:border-b-0
-							{onRowClick ? 'cursor-pointer hover:bg-gray-50/70' : ''}"
+						class="group border-b border-subtle transition-colors duration-150 last:border-b-0
+							{onRowClick ? 'cursor-pointer hover:bg-surface-raised' : ''}"
 						onclick={onRowClick ? () => onRowClick(row) : undefined}
 						tabindex={onRowClick ? 0 : undefined}
 						onkeydown={onRowClick
@@ -379,12 +377,12 @@
 										<button
 											type="button"
 											onclick={(e) => openDropdown(rowIndex, e)}
-											class="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400
+											class="flex h-7 w-7 items-center justify-center rounded-lg text-muted
 												transition-all duration-150
-												hover:bg-gray-100 hover:text-gray-700
-												focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-1
+												hover:bg-surface-raised hover:text-primary
+												focus:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-1
 												opacity-0 group-hover:opacity-100
-												{activeDropdownIndex === rowIndex ? 'bg-gray-100 text-gray-700 opacity-100' : ''}"
+												{activeDropdownIndex === rowIndex ? 'bg-surface-raised text-primary opacity-100' : ''}"
 											aria-label="Row actions"
 											aria-haspopup="menu"
 											aria-expanded={activeDropdownIndex === rowIndex}
@@ -407,8 +405,8 @@
 									<span
 										class="block max-w-xs truncate
 											{col.type === 'number' || col.type === 'currency'
-											? 'font-mono tabular-nums text-gray-800'
-											: 'text-gray-700'}"
+											? 'font-mono tabular-nums text-primary'
+											: 'text-secondary'}"
 										title={value != null && value !== '' ? String(value) : undefined}
 									>
 										{formatValue(col, value)}
@@ -429,7 +427,7 @@
 		role="menu"
 		aria-label="Row actions"
 		tabindex="-1"
-		class="fixed z-50 min-w-[11.5rem] overflow-hidden rounded-xl border border-gray-200/60 bg-white/95 py-1 shadow-xl shadow-black/[0.08] backdrop-blur-xl"
+		class="fixed z-50 min-w-[11.5rem] overflow-hidden rounded-xl py-1 glass-strong"
 		style="
 			top: {dropdownTop}px;
 			left: {dropdownLeft}px;
@@ -445,10 +443,10 @@
 					role="menuitem"
 					class="flex w-full items-center gap-2.5 px-3.5 py-2 text-left text-sm
 						transition-colors duration-100
-						focus:outline-none focus-visible:bg-gray-50
+						focus:outline-none focus-visible:bg-surface-raised
 						{action.variant === 'danger'
-						? 'text-red-600 hover:bg-red-50/80'
-						: 'text-gray-700 hover:bg-gray-50'}"
+						? 'text-red-600 hover:bg-red-50/80 dark:text-red-400 dark:hover:bg-red-500/10'
+						: 'text-secondary hover:bg-surface-raised'}"
 					onclick={(e) => handleActionClick(action, activeRow, e)}
 				>
 					{#if action.icon}
