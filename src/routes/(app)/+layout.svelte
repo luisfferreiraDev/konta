@@ -14,133 +14,264 @@
 	} from '@lucide/svelte';
 
 	let { data, children } = $props();
+	let sidebarExpanded = $state(false);
 
 	async function logout() {
 		await authClient.signOut();
 		goto(routes.auth.login());
 	}
 
-	const topMenu = [
-		{
-			label: 'Search',
-			icon: Search,
-			onClick: () => {}
-		},
-		{
-			label: 'Notifications',
-			icon: Bell,
-			onClick: () => {}
-		},
-		{
-			label: 'User',
-			content: `<div
-						class=" flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs text-black"
-					>
-						${data.user.name.slice(0, 2).toUpperCase()}
-					</div>`,
-			onClick: () => {}
-		}
-	];
-
 	const sideMenu = [
-		{
-			label: 'Dashboard',
-			icon: House,
-			href: routes.dashboard.index()
-		},
-		{
-			label: 'Clients',
-			icon: Users,
-			href: routes.clients.list()
-		},
-		{
-			label: 'Invoices',
-			icon: FileSpreadsheet,
-			href: routes.invoices.list()
-		}
+		{ label: 'Dashboard', icon: House, href: routes.dashboard.index() },
+		{ label: 'Clients', icon: Users, href: routes.clients.list() },
+		{ label: 'Invoices', icon: FileSpreadsheet, href: routes.invoices.list() }
 	];
 
-	const bottomMenu = [
-		{
-			label: 'Settings',
-			icon: Settings,
-			onClick: () => {}
-		},
-		{
-			label: 'Expand',
-			icon: PanelLeftOpen,
-			onClick: () => {}
-		}
-	];
+	function isActive(href: string) {
+		if (href === '/') return page.url.pathname === '/';
+		return page.url.pathname.startsWith(href);
+	}
 
-	// $inspect(data);
+	const userInitials = data.user.name.slice(0, 2).toUpperCase();
 </script>
 
-<div class="mx-auto flex min-h-screen max-w-400 gap-4 pr-4">
-	<header class=" fixed top-4 w-full max-w-400 px-4">
-		<div class="flex h-14 w-full items-center justify-between">
-			<a
-				class="flex h-14 w-14 items-center justify-center rounded-lg glass"
-				href={routes.dashboard.index()}
+<!-- ─── Root layout ────────────────────────────────────────────────────────── -->
+<div class="mx-auto flex min-h-screen max-w-400">
+	<!-- ─── Desktop sidebar ──────────────────────────────────────────────────── -->
+	<aside
+		class="sticky top-0 hidden h-screen shrink-0 flex-col gap-2 px-2 py-2
+		       transition-[width] duration-300 ease-in-out md:flex
+		       {sidebarExpanded ? 'w-52' : 'w-18'}"
+	>
+		<!-- logo -->
+		<a
+			href={routes.dashboard.index()}
+			class="flex h-11 min-w-14 shrink-0 items-center overflow-hidden rounded-xl glass px-3
+			       transition-all duration-300"
+		>
+			<span class="text-primary shrink-0 pl-2 text-base font-bold tracking-tight">K.</span>
+			<span
+				class="text-secondary ml-2 overflow-hidden text-sm font-semibold whitespace-nowrap
+				       transition-[opacity,max-width] duration-300
+				       {sidebarExpanded ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}"
 			>
-				K.
-			</a>
+				konta
+			</span>
+		</a>
 
-			<div class=" flex h-full items-center justify-center gap-2 rounded-lg glass px-2">
-				{#each topMenu as item, i (item.label)}
-					{@const Icon = item.icon}
-					{#if i !== 0}
-						<div class=" h-6 w-px bg-white/10"></div>
-					{/if}
-					<button
-						class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-white transition-all hover:bg-white/10"
+		<!-- nav links -->
+		<nav class="flex min-w-14 flex-1 flex-col gap-1 rounded-xl glass py-2">
+			{#each sideMenu as item (item.label)}
+				{@const Icon = item.icon}
+				{@const active = isActive(item.href)}
+				<div class="group relative px-2">
+					<a
+						href={item.href}
+						class="relative flex h-10 w-full shrink-0 items-center gap-3 overflow-hidden rounded-lg px-2
+						       transition-all duration-200
+						       {active
+							? 'bg-primary-500/12 text-primary-500 dark:bg-primary-500/18'
+							: 'text-secondary hover:text-primary hover:bg-white/8'}"
 					>
-						{#if item.content}
-							{@html item.content}
-						{:else}
+						<!-- active pill -->
+						{#if active}
+							<span
+								class="absolute top-2 bottom-2 left-0 w-0.5 animate-[slide-in_0.2s_ease-out] rounded-full
+								       bg-primary-500"
+							></span>
+						{/if}
+
+						<span class="flex w-5 shrink-0 items-center justify-center">
 							<Icon size={16} />
-						{/if}
-					</button>
-				{/each}
-			</div>
-		</div>
-	</header>
-	<aside class="sticky top-20 ml-4 h-[calc(100dvh-112px)] w-14 shrink-0">
-		<div class="flex h-full w-14 flex-col items-center justify-between">
-			<nav class="w-full">
-				<ul class="flex w-full flex-col items-center gap-2 rounded-lg glass py-2">
-					{#each sideMenu as item, i (item.label)}
-						{@const Icon = item.icon}
-						{#if i !== 0}
-							<div class=" h-px w-6 bg-white/10"></div>
-						{/if}
-						<a
-							href={item.href}
-							class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-white transition-all hover:bg-white/10"
+						</span>
+
+						<span
+							class="overflow-hidden text-sm font-medium whitespace-nowrap
+							       transition-[opacity,max-width] duration-300
+							       {sidebarExpanded ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}"
 						>
-							<Icon size={16} />
-						</a>
-					{/each}
-				</ul>
-			</nav>
+							{item.label}
+						</span>
+					</a>
 
-			<div class="flex w-full flex-col items-center gap-2 rounded-lg glass py-2">
-				{#each bottomMenu as item, i (item.label)}
-					{@const Icon = item.icon}
-					{#if i !== 0}
-						<div class=" h-px w-6 bg-white/10"></div>
+					<!-- tooltip (collapsed only) -->
+					{#if !sidebarExpanded}
+						<div
+							class="pointer-events-none absolute top-1/2 left-12 z-50 -translate-y-1/2
+							       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+						>
+							<div
+								class="text-primary rounded-md glass px-2.5 py-1 text-xs
+								       font-medium shadow-lg"
+							>
+								{item.label}
+							</div>
+						</div>
 					{/if}
-					<button
-						class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-white transition-all hover:bg-white/10"
+				</div>
+			{/each}
+		</nav>
+
+		<!-- bottom actions -->
+		<div class="flex min-w-14 flex-col gap-1 rounded-xl glass py-2">
+			<!-- settings -->
+			<div class="group relative px-2">
+				<a
+					href={routes.settings.index()}
+					class="relative flex h-10 w-full shrink-0 items-center gap-3 overflow-hidden rounded-lg px-2
+					       transition-all duration-200
+					       {isActive(routes.settings.index())
+						? 'bg-primary-500/12 text-primary-500 dark:bg-primary-500/18'
+						: 'text-secondary hover:text-primary hover:bg-white/8'}"
+				>
+					{#if isActive(routes.settings.index())}
+						<span class="absolute top-2 bottom-2 left-0 w-0.5 rounded-full bg-primary-500"></span>
+					{/if}
+					<span class="flex w-5 shrink-0 items-center justify-center">
+						<Settings size={16} />
+					</span>
+					<span
+						class="overflow-hidden text-sm font-medium whitespace-nowrap
+						       transition-[opacity,max-width] duration-300
+						       {sidebarExpanded ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}"
 					>
-						<Icon size={16} />
-					</button>
-				{/each}
+						Settings
+					</span>
+				</a>
+				{#if !sidebarExpanded}
+					<div
+						class="pointer-events-none absolute top-1/2 left-12 z-50 -translate-y-1/2
+						       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+					>
+						<div class="text-primary rounded-md glass px-2.5 py-1 text-xs font-medium shadow-lg">
+							Settings
+						</div>
+					</div>
+				{/if}
+			</div>
+
+			<!-- divider -->
+			<div class="bg-border mx-3 h-px"></div>
+
+			<!-- expand / collapse toggle -->
+			<div class="group relative px-2">
+				<button
+					onclick={() => (sidebarExpanded = !sidebarExpanded)}
+					class="text-secondary hover:text-primary flex h-10 w-full cursor-pointer items-center gap-3 overflow-hidden
+					       rounded-lg px-2 transition-all
+					       duration-200 hover:bg-white/8"
+				>
+					<span
+						class="flex w-5 shrink-0 items-center justify-center transition-transform duration-300
+						       {sidebarExpanded ? 'rotate-180' : ''}"
+					>
+						<PanelLeftOpen size={16} />
+					</span>
+					<span
+						class="overflow-hidden text-sm font-medium whitespace-nowrap
+						       transition-[opacity,max-width] duration-300
+						       {sidebarExpanded ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}"
+					>
+						Collapse
+					</span>
+				</button>
+				{#if !sidebarExpanded}
+					<div
+						class="pointer-events-none absolute top-1/2 left-12 z-50 -translate-y-1/2
+						       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+					>
+						<div class="text-primary rounded-md glass px-2.5 py-1 text-xs font-medium shadow-lg">
+							Expand
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</aside>
 
-	<main class=" mt-20 grow">
-		{@render children()}
-	</main>
+	<!-- ─── Content area (shifts right with sidebar) ─────────────────────────── -->
+	<div class="flex min-h-screen flex-1 flex-col pb-16 md:pb-0">
+		<!-- ─── Top header ──────────────────────────────────────────────────────── -->
+		<header class="sticky top-0 z-30 flex items-center justify-between px-2 py-2">
+			<!-- mobile: logo -->
+			<a
+				href={routes.dashboard.index()}
+				class="flex h-11 w-11 items-center justify-center rounded-lg glass text-sm font-bold md:hidden"
+			>
+				K.
+			</a>
+
+			<!-- desktop: spacer so actions sit on the right -->
+			<div class="hidden md:block"></div>
+
+			<!-- right actions -->
+			<div class="flex h-11 items-center gap-1 rounded-xl glass px-2">
+				<button
+					class="text-secondary hover:text-primary flex h-8 w-8 cursor-pointer items-center
+					       justify-center rounded-lg transition-all hover:bg-white/10"
+				>
+					<Search size={15} />
+				</button>
+				<div class="bg-border h-5 w-px"></div>
+				<button
+					class="text-secondary hover:text-primary flex h-8 w-8 cursor-pointer items-center
+					       justify-center rounded-lg transition-all hover:bg-white/10"
+				>
+					<Bell size={15} />
+				</button>
+				<div class="bg-border h-5 w-px"></div>
+				<button
+					class="text-primary ring-border flex h-8 w-8 cursor-pointer items-center
+					       justify-center rounded-full bg-white/10 text-xs
+					       font-semibold ring-1 transition-all hover:bg-white/20"
+				>
+					{userInitials}
+				</button>
+			</div>
+		</header>
+
+		<!-- ─── Page content ────────────────────────────────────────────────────── -->
+		<main class="mr-2 flex-1 overflow-auto px-4 pb-6 md:px-6">
+			{@render children()}
+		</main>
+	</div>
+
+	<!-- ─── Mobile bottom nav ────────────────────────────────────────────────── -->
+	<nav class="border-border fixed right-0 bottom-0 left-0 z-40 border-t glass md:hidden">
+		<div class="flex h-16 items-center justify-around px-2">
+			{#each sideMenu as item (item.label)}
+				{@const Icon = item.icon}
+				{@const active = isActive(item.href)}
+				<a
+					href={item.href}
+					class="flex flex-col items-center gap-1 rounded-xl px-4 py-2 transition-all duration-200
+					       {active ? 'text-primary-500' : 'text-muted hover:text-secondary'}"
+				>
+					<Icon size={18} />
+					<span class="text-[10px] leading-none font-medium">{item.label}</span>
+				</a>
+			{/each}
+			<a
+				href={routes.settings.index()}
+				class="flex flex-col items-center gap-1 rounded-xl px-4 py-2 transition-all duration-200
+				       {isActive(routes.settings.index()) ? 'text-primary-500' : 'text-muted hover:text-secondary'}"
+			>
+				<Settings size={18} />
+				<span class="text-[10px] leading-none font-medium">Settings</span>
+			</a>
+		</div>
+	</nav>
 </div>
+
+<style>
+	@keyframes slide-in {
+		from {
+			transform: scaleY(0);
+			opacity: 0;
+		}
+		to {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+	}
+</style>
