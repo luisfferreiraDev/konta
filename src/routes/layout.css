@@ -129,3 +129,42 @@
 		0 4px 12px rgba(0, 0, 0, 0.08),
 		0 1px 3px rgba(0, 0, 0, 0.06);
 }
+
+/* Text colors */
+@utility text-primary {
+	color: var(--text-primary);
+}
+
+@utility text-secondary {
+	color: var(--text-secondary);
+}
+
+@utility text-muted {
+	color: var(--text-muted);
+}
+
+/* Background colors */
+@utility bg-surface {
+	background-color: var(--bg-surface);
+}
+
+@utility bg-surface-raised {
+	background-color: var(--bg-surface-raised);
+}
+
+@utility bg-base {
+	background-color: var(--bg-base);
+}
+
+/* Border colors */
+@utility border-border {
+	border-color: var(--border);
+}
+
+@utility border-subtle {
+	border-color: var(--border-subtle);
+}
+
+@utility bg-border {
+	background-color: var(--border);
+}
