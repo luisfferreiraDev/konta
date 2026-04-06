@@ -7,11 +7,15 @@
 		Bell,
 		FileSpreadsheet,
 		House,
+		Paintbrush,
 		PanelLeftOpen,
 		Search,
 		Settings,
-		Users
+		User,
+		Users,
+		LogOut
 	} from '@lucide/svelte';
+	import Dropdown from '$lib/components/Dropdown.svelte';
 
 	let { data, children } = $props();
 	let sidebarExpanded = $state(false);
@@ -49,9 +53,9 @@
 			class="flex h-11 min-w-14 shrink-0 items-center overflow-hidden rounded-xl glass px-3
 			       transition-all duration-300"
 		>
-			<span class="text-primary shrink-0 pl-2 text-base font-bold tracking-tight">K.</span>
+			<span class="shrink-0 pl-2 text-base font-bold tracking-tight text-primary">K.</span>
 			<span
-				class="text-secondary ml-2 overflow-hidden text-sm font-semibold whitespace-nowrap
+				class="ml-2 overflow-hidden text-sm font-semibold whitespace-nowrap text-secondary
 				       transition-[opacity,max-width] duration-300
 				       {sidebarExpanded ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}"
 			>
@@ -71,7 +75,7 @@
 						       transition-all duration-200
 						       {active
 							? 'bg-primary-500/12 text-primary-500 dark:bg-primary-500/18'
-							: 'text-secondary hover:text-primary hover:bg-white/8'}"
+							: 'text-secondary hover:bg-white/8 hover:text-primary'}"
 					>
 						<!-- active pill -->
 						{#if active}
@@ -101,8 +105,8 @@
 							       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
 						>
 							<div
-								class="text-primary rounded-md glass px-2.5 py-1 text-xs
-								       font-medium shadow-lg"
+								class="rounded-md glass px-2.5 py-1 text-xs font-medium
+								       text-primary shadow-lg"
 							>
 								{item.label}
 							</div>
@@ -122,7 +126,7 @@
 					       transition-all duration-200
 					       {isActive(routes.settings.index())
 						? 'bg-primary-500/12 text-primary-500 dark:bg-primary-500/18'
-						: 'text-secondary hover:text-primary hover:bg-white/8'}"
+						: 'text-secondary hover:bg-white/8 hover:text-primary'}"
 				>
 					{#if isActive(routes.settings.index())}
 						<span class="absolute top-2 bottom-2 left-0 w-0.5 rounded-full bg-primary-500"></span>
@@ -143,7 +147,7 @@
 						class="pointer-events-none absolute top-1/2 left-12 z-50 -translate-y-1/2
 						       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
 					>
-						<div class="text-primary rounded-md glass px-2.5 py-1 text-xs font-medium shadow-lg">
+						<div class="rounded-md glass px-2.5 py-1 text-xs font-medium text-primary shadow-lg">
 							Settings
 						</div>
 					</div>
@@ -151,15 +155,15 @@
 			</div>
 
 			<!-- divider -->
-			<div class="bg-border mx-3 h-px"></div>
+			<div class="mx-3 h-px bg-border"></div>
 
 			<!-- expand / collapse toggle -->
 			<div class="group relative px-2">
 				<button
 					onclick={() => (sidebarExpanded = !sidebarExpanded)}
-					class="text-secondary hover:text-primary flex h-10 w-full cursor-pointer items-center gap-3 overflow-hidden
-					       rounded-lg px-2 transition-all
-					       duration-200 hover:bg-white/8"
+					class="flex h-10 w-full cursor-pointer items-center gap-3 overflow-hidden rounded-lg px-2
+					       text-secondary transition-all duration-200
+					       hover:bg-white/8 hover:text-primary"
 				>
 					<span
 						class="flex w-5 shrink-0 items-center justify-center transition-transform duration-300
@@ -180,7 +184,7 @@
 						class="pointer-events-none absolute top-1/2 left-12 z-50 -translate-y-1/2
 						       opacity-0 transition-opacity duration-150 group-hover:opacity-100"
 					>
-						<div class="text-primary rounded-md glass px-2.5 py-1 text-xs font-medium shadow-lg">
+						<div class="rounded-md glass px-2.5 py-1 text-xs font-medium text-primary shadow-lg">
 							Expand
 						</div>
 					</div>
@@ -207,26 +211,76 @@
 			<!-- right actions -->
 			<div class="flex h-11 items-center gap-1 rounded-xl glass px-2">
 				<button
-					class="text-secondary hover:text-primary flex h-8 w-8 cursor-pointer items-center
-					       justify-center rounded-lg transition-all hover:bg-white/10"
+					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg
+					       text-secondary transition-all hover:bg-white/10 hover:text-primary"
 				>
 					<Search size={15} />
 				</button>
-				<div class="bg-border h-5 w-px"></div>
+				<div class="h-5 w-px bg-border"></div>
 				<button
-					class="text-secondary hover:text-primary flex h-8 w-8 cursor-pointer items-center
-					       justify-center rounded-lg transition-all hover:bg-white/10"
+					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg
+					       text-secondary transition-all hover:bg-white/10 hover:text-primary"
 				>
 					<Bell size={15} />
 				</button>
-				<div class="bg-border h-5 w-px"></div>
-				<button
-					class="text-primary ring-border flex h-8 w-8 cursor-pointer items-center
-					       justify-center rounded-full bg-white/10 text-xs
-					       font-semibold ring-1 transition-all hover:bg-white/20"
-				>
-					{userInitials}
-				</button>
+				<div class="h-5 w-px bg-border"></div>
+				<Dropdown>
+					{#snippet trigger()}
+						<span
+							class="ring-border flex h-8 w-8 cursor-pointer items-center justify-center
+					       rounded-full bg-white/10 text-xs font-semibold
+					       text-primary ring-1 transition-all hover:bg-white/20"
+						>
+							{userInitials}
+						</span>
+					{/snippet}
+					<div class=" flex w-64 flex-col">
+						<div class=" flex items-center gap-1.5 px-4 pt-4">
+							<span
+								class="ring-border flex h-8 w-8 cursor-pointer items-center justify-center
+					       rounded-full bg-white/10 text-xs font-semibold
+					       text-primary ring-1 transition-all hover:bg-white/20"
+							>
+								{userInitials}
+							</span>
+							<div class=" flex flex-col gap-0.5">
+								<p class=" truncate text-sm font-medium text-primary">
+									{data.user.name}
+								</p>
+								<p class=" truncate text-sm text-secondary">
+									{data.user.email}
+								</p>
+							</div>
+						</div>
+						<div class=" flex flex-col p-2">
+							<div class="my-2 w-full border-t border-border"></div>
+
+							<a
+								href={routes.settings.index()}
+								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
+								><User size={16} />Profile</a
+							>
+							<a
+								href={routes.settings.index()}
+								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
+								><Paintbrush size={16} />Invoice Design</a
+							>
+							<a
+								href={routes.settings.index()}
+								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
+								><Settings size={16} />Settings</a
+							>
+							<div class="my-2 w-full border-t border-border"></div>
+							<button
+								onclick={logout}
+								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
+							>
+								<LogOut size={16} />
+								Log out
+							</button>
+						</div>
+					</div>
+				</Dropdown>
 			</div>
 		</header>
 
@@ -237,7 +291,7 @@
 	</div>
 
 	<!-- ─── Mobile bottom nav ────────────────────────────────────────────────── -->
-	<nav class="border-border shrink-0 border-t glass md:hidden">
+	<nav class="shrink-0 border-t border-border glass md:hidden">
 		<div class="flex h-16 items-center justify-around px-2">
 			{#each sideMenu as item (item.label)}
 				{@const Icon = item.icon}
