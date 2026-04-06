@@ -23,6 +23,10 @@ export const routes = {
 		index: () => '/settings'
 	},
 
+	dashboard: {
+		index: () => '/'
+	},
+
 	api: {
 		invoicePdf: (invoiceId: string) => `/api/invoices/${invoiceId}/pdf`,
 		invoicePreview: (invoiceId: string) => `/api/invoices/${invoiceId}/preview`,

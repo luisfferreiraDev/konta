@@ -3,6 +3,15 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { routes } from '$lib/routes';
+	import {
+		Bell,
+		FileSpreadsheet,
+		House,
+		PanelLeftOpen,
+		Search,
+		Settings,
+		Users
+	} from '@lucide/svelte';
 
 	let { data, children } = $props();
 
@@ -10,10 +19,64 @@
 		await authClient.signOut();
 		goto(routes.auth.login());
 	}
+
+	$inspect(data);
 </script>
 
-<div class="min-h-screen">
-	<header class="border-b border-gray-200 bg-white">
+<div class="mx-auto flex min-h-screen max-w-400 gap-8">
+	<header class=" fixed top-4 flex h-14 w-full items-center justify-between px-4">
+		<a
+			class="flex h-14 w-14 items-center justify-center rounded-lg glass"
+			href={routes.dashboard.index()}
+		>
+			K.
+		</a>
+
+		<div class=" flex h-full items-center justify-center gap-2 rounded-lg glass px-4">
+			<button
+				class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-all hover:bg-white/10"
+			>
+				<Search size={16} />
+			</button>
+			<div class=" h-6 w-px bg-white/10"></div>
+			<button
+				class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-all hover:bg-white/10"
+			>
+				<Bell size={16} />
+			</button>
+			<div class=" h-6 w-px bg-white/10"></div>
+			<button
+				class=" flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-all hover:bg-white/10"
+			>
+				<div
+					class=" flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs text-black"
+				>
+					{data.user.name.slice(0, 2).toUpperCase()}
+				</div>
+			</button>
+		</div>
+	</header>
+	<aside class="sticky top-20 h-[calc(100dvh-112px)] w-14 shrink-0 pl-4">
+		<div class="flex h-full w-14 flex-col items-center justify-between">
+			<nav class="w-full">
+				<ul class="flex w-full flex-col items-center gap-2 rounded-lg glass py-4">
+					<li>
+						<a class=" flex h-10 w-10 items-center justify-center" href={routes.dashboard.index()}
+							><House /></a
+						>
+					</li>
+					<li><a href={routes.clients.list()}><Users /></a></li>
+					<li><a href={routes.invoices.list()}><FileSpreadsheet /></a></li>
+				</ul>
+			</nav>
+
+			<div class="flex w-full flex-col items-center gap-2 rounded-lg glass py-4">
+				<button><Settings /></button>
+				<button><PanelLeftOpen /></button>
+			</div>
+		</div>
+	</aside>
+	<!-- <header class="border-b border-gray-200 bg-white">
 		<div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
 			<div class="flex items-center gap-6">
 				<span class="font-bold text-gray-900">Konta</span>
@@ -67,7 +130,7 @@
 				</button>
 			</div>
 		</div>
-	</header>
+	</header> -->
 
 	{@render children()}
 </div>
