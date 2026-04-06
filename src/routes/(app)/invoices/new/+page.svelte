@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import { routes } from '$lib/routes';
+	import { enhance } from '$app/forms';
+	import { toast } from '$lib/components/toast/toast-store';
+	import { goto } from '$app/navigation';
 
 	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
@@ -72,7 +75,20 @@
 		</div>
 	{/if}
 
-	<form method="post" class="space-y-6">
+	<form
+		method="post"
+		class="space-y-6"
+		use:enhance={() => {
+			return ({ result }) => {
+				if (result.status === 303) {
+					toast.success('Invoice saved successfully');
+					goto(routes.invoices.list());
+				} else {
+					toast.error('Failed to save invoice');
+				}
+			};
+		}}
+	>
 		<div class="space-y-6 rounded-lg bg-white p-6 shadow">
 			<!-- Basic Info -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
