@@ -3,12 +3,13 @@ import type { PageServerLoad, Actions } from './$types';
 import { Membership, Organization } from '$lib/server/models';
 import { createOrganizationSchema } from '$lib/server/validation/organization.schema';
 import { setActiveOrg } from '$lib/server/org-context';
+import { routes } from '$lib/routes';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	if (!locals.user) redirect(302, '/login');
+	if (!locals.user) redirect(302, routes.auth.login());
 
 	const membershipCount = await Membership.countDocuments({ userId: locals.user.id });
-	if (membershipCount > 0) redirect(302, '/dashboard');
+	if (membershipCount > 0) redirect(302, routes.auth.dashboard());
 
 	return {};
 };
@@ -16,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
 	default: async (event) => {
 		const { request, locals } = event;
-		if (!locals.user) redirect(302, '/login');
+		if (!locals.user) redirect(302, routes.auth.login());
 
 		const data = await request.formData();
 
@@ -36,6 +37,6 @@ export const actions: Actions = {
 		await Membership.create({ userId: locals.user.id, orgId: org._id, role: 'owner' });
 		await setActiveOrg(event, org._id.toString());
 
-		redirect(302, '/dashboard');
+		redirect(302, routes.auth.dashboard());
 	}
 };

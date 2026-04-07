@@ -1,10 +1,11 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { auth } from '$lib/server/auth';
+import { routes } from '$lib/routes';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) {
-		redirect(302, '/dashboard');
+		redirect(302, routes.auth.dashboard());
 	}
 	return {};
 };
@@ -25,6 +26,6 @@ export const actions: Actions = {
 			return fail(401, { error: 'Invalid email or password.' });
 		}
 
-		redirect(302, '/dashboard');
+		redirect(302, routes.auth.dashboard());
 	}
 };
