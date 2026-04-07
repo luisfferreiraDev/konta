@@ -5,6 +5,7 @@ import { Membership, Organization } from '$lib/server/models';
 import { setActiveOrg } from '$lib/server/org-context';
 import { db } from '$lib/server/db';
 import { routes } from '$lib/routes';
+import { getDashboardStats } from '$lib/server/services/invoice.service';
 
 export const load: PageServerLoad = async (event) => {
 	const { locals } = event;
@@ -33,6 +34,8 @@ export const load: PageServerLoad = async (event) => {
 	const orgs = await Organization.find({ _id: { $in: orgIds } });
 	const roleByOrgId = new Map(memberships.map((m) => [m.orgId.toString(), m.role]));
 
+	const dashboard = activeOrg ? await getDashboardStats(activeOrg.org._id) : null;
+
 	return {
 		user: locals.user,
 		activeOrg: activeOrg
@@ -48,7 +51,10 @@ export const load: PageServerLoad = async (event) => {
 			name: org.name,
 			currency: org.currency,
 			role: roleByOrgId.get(org._id.toString())
-		}))
+		})),
+		summary: dashboard?.summary ?? { total: 0, draft: 0, open: 0, overdue: 0 },
+		recentInvoices: dashboard?.recentInvoices ?? [],
+		overdueInvoices: dashboard?.overdueInvoices ?? []
 	};
 };
 

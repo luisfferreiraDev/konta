@@ -209,6 +209,87 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 	cancelled: [] // Terminal state
 };
 
+// ─── Dashboard ───────────────────────────────────────────────────────────────
+
+export interface DashboardSummary {
+	total: number;
+	draft: number;
+	/** Invoices awaiting payment (sent + overdue) */
+	open: number;
+	overdue: number;
+}
+
+export interface DashboardInvoiceRow {
+	_id: string;
+	number: string;
+	clientName: string;
+	totalAmount: number;
+	currency: string;
+	status: InvoiceStatus;
+	dueDate: string;
+	issueDate: string;
+}
+
+/**
+ * Fetch summary stats and invoice lists for the dashboard.
+ * All queries are scoped to the given org and run in parallel.
+ */
+export async function getDashboardStats(orgId: mongoose.Types.ObjectId): Promise<{
+	summary: DashboardSummary;
+	recentInvoices: DashboardInvoiceRow[];
+	overdueInvoices: DashboardInvoiceRow[];
+}> {
+	type ClientRef = { _id: mongoose.Types.ObjectId; name: string };
+
+	const [statusCounts, recentDocs, overdueDocs] = await Promise.all([
+		Invoice.aggregate<{ _id: string; count: number }>([
+			{ $match: { orgId } },
+			{ $group: { _id: '$status', count: { $sum: 1 } } }
+		]),
+		Invoice.find({ orgId })
+			.sort({ createdAt: -1 })
+			.limit(5)
+			.populate('clientId', 'name')
+			.lean(),
+		Invoice.find({ orgId, status: 'overdue' })
+			.sort({ dueDate: 1 })
+			.populate('clientId', 'name')
+			.lean()
+	]);
+
+	const countMap: Record<string, number> = {};
+	for (const { _id, count } of statusCounts) countMap[_id] = count;
+
+	const summary: DashboardSummary = {
+		total: Object.values(countMap).reduce((a, b) => a + b, 0),
+		draft: countMap['draft'] ?? 0,
+		open: (countMap['sent'] ?? 0) + (countMap['overdue'] ?? 0),
+		overdue: countMap['overdue'] ?? 0
+	};
+
+	function toRow(doc: (typeof recentDocs)[number]): DashboardInvoiceRow {
+		const client = doc.clientId as unknown as ClientRef | null;
+		return {
+			_id: String(doc._id),
+			number: doc.number,
+			clientName: client?.name ?? 'Unknown',
+			totalAmount: doc.totalAmount,
+			currency: doc.currency,
+			status: doc.status,
+			dueDate: doc.dueDate.toISOString(),
+			issueDate: doc.issueDate.toISOString()
+		};
+	}
+
+	return {
+		summary,
+		recentInvoices: recentDocs.map(toRow),
+		overdueInvoices: overdueDocs.map(toRow)
+	};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
  * Update invoice status with automatic date tracking
  */
