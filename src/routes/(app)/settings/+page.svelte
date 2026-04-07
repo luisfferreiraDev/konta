@@ -3,6 +3,8 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import { routes } from '$lib/routes';
+	import { themeStore } from '$lib/theme-store';
+	import { Moon, Sun } from '@lucide/svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -756,33 +758,37 @@
 
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<div class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
-						{#if isDark}
-							<svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-							</svg>
+					<div
+						class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50"
+					>
+						{#if $themeStore}
+							<Moon size={12} />
 						{:else}
-							<svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="5" />
-								<path stroke-linecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-							</svg>
+							<Sun size={12} />
 						{/if}
 					</div>
 					<div>
-						<p class="text-sm font-medium text-gray-900">{isDark ? 'Dark' : 'Light'} mode</p>
-						<p class="text-xs text-gray-500">{isDark ? 'Using dark theme' : 'Using light theme'}</p>
+						<p class="text-sm font-medium text-gray-900">{$themeStore ? 'Dark' : 'Light'} mode</p>
+						<p class="text-xs text-gray-500">
+							{$themeStore ? 'Using dark theme' : 'Using light theme'}
+						</p>
 					</div>
 				</div>
 
 				<button
 					type="button"
-					onclick={toggleTheme}
-					class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-none {isDark ? 'bg-primary-500' : 'bg-gray-200'}"
+					onclick={() => themeStore.toggle()}
+					class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-none {$themeStore
+						? 'bg-primary-500'
+						: 'bg-gray-200'}"
 					role="switch"
-					aria-checked={isDark}
+					aria-checked={$themeStore}
+					aria-label="Theme switcher"
 				>
 					<span
-						class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform duration-200 {isDark ? 'translate-x-5' : 'translate-x-0'}"
+						class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform duration-200 {$themeStore
+							? 'translate-x-5'
+							: 'translate-x-0'}"
 					></span>
 				</button>
 			</div>

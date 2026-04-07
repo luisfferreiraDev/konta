@@ -17,6 +17,7 @@
 	} from '@lucide/svelte';
 	import Dropdown from '$lib/components/Dropdown.svelte';
 	import ToastContainer from '$lib/components/toast/ToastContainer.svelte';
+	import { themeStore } from '$lib/theme-store.js';
 
 	let { data, children } = $props();
 	let sidebarExpanded = $state(false);
@@ -273,6 +274,28 @@
 								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
 								><Settings size={16} />Settings</a
 							>
+							<div class="my-2 w-full border-t border-border"></div>
+							<button
+								onclick={() => themeStore.toggle()}
+								class="flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors hover:bg-surface-hover"
+							>
+								<span class="text-sm">Dark mode</span>
+								<div
+									class="relative inline-flex h-4 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-none {$themeStore
+										? 'bg-primary-500'
+										: 'bg-gray-200'}"
+									role="switch"
+									aria-checked={$themeStore}
+									aria-label="Theme switcher"
+								>
+									<span
+										class="pointer-events-none inline-block h-3 w-3 rounded-full bg-white shadow ring-0 transition-transform duration-200 {$themeStore
+											? 'translate-x-4'
+											: 'translate-x-0'}"
+									></span>
+								</div>
+							</button>
+
 							<div class="my-2 w-full border-t border-border"></div>
 							<button
 								onclick={logout}
