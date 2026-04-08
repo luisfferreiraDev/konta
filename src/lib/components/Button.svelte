@@ -13,18 +13,25 @@
 		[key: string]: unknown;
 	}
 
-	let { variant = 'primary', size = 'md', class: className = '', href, children, ...props }: Props =
-		$props();
+	let {
+		variant = 'primary',
+		size = 'md',
+		class: className = '',
+		href,
+		children,
+		...props
+	}: Props = $props();
 
 	const base =
 		'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 
 	const variants: Record<Variant, string> = {
 		primary:
-			'border border-transparent bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500',
+			'border border-transparent bg-primary-500 text-white shadow-sm hover:bg-primary-700 focus:ring-primary-500',
 		secondary:
 			'border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-indigo-500',
-		ghost: 'border border-transparent bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-indigo-500',
+		ghost:
+			'border border-transparent bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-indigo-500',
 		danger:
 			'border border-transparent bg-red-600 text-white shadow-sm hover:bg-red-700 focus:ring-red-500'
 	};
