@@ -5,6 +5,10 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import type { PageData, ActionData } from './$types';
 	import { routes } from '$lib/routes';
+	import Container from '$lib/components/Container.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import { UserPlus } from '@lucide/svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -68,32 +72,30 @@
 	<input type="hidden" name="clientId" bind:value={deleteClientId} />
 </form>
 
-<main class="py-8">
-	<div class="mb-6 flex items-center justify-between">
-		<h1 class="text-2xl font-semibold text-gray-900">Clients</h1>
-		<a
-			href={routes.clients.new()}
-			class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-		>
-			New Client
-		</a>
-	</div>
-
-	{#if form?.deleteError}
-		<div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-			{form.deleteError}
+<Container>
+	<PageHeader title="Clients" subtitle="Manage your clients and track their information">
+		<div class="flex gap-2">
+			<Button variant="primary" href={routes.clients.new()}
+				><UserPlus size={14} /> New Client</Button
+			>
 		</div>
-	{/if}
+	</PageHeader>
 
-	<form method="GET" class="mb-4">
-		<input
-			type="text"
-			name="search"
-			value={data.search}
-			placeholder="Search by name or email…"
-			class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none sm:w-72"
-		/>
-	</form>
+	<div class="mb-6 rounded-lg glass shadow">
+		<form method="GET" class="p-4">
+			<div>
+				<label for="search" class="block text-sm font-medium text-primary">Search</label>
+				<input
+					type="text"
+					id="search"
+					name="search"
+					value={data.search}
+					placeholder="Search..."
+					class="mt-1 block w-full rounded-md text-secondary shadow-sm outline-primary-500 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+				/>
+			</div>
+		</form>
+	</div>
 
 	<DataTable
 		{columns}
@@ -127,4 +129,4 @@
 			</div>
 		</div>
 	{/if}
-</main>
+</Container>
