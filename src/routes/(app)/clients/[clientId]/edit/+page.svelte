@@ -20,10 +20,11 @@
 	<title>Edit Client — Konta</title>
 </svelte:head>
 
-<main class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+<main class="py-8">
 	<div class="mb-6">
-		<a href={routes.clients.list()} class="text-sm text-gray-500 transition-colors hover:text-gray-800"
-			>← Clients</a
+		<a
+			href={routes.clients.list()}
+			class="text-sm text-gray-500 transition-colors hover:text-gray-800">← Clients</a
 		>
 		<h1 class="mt-2 text-2xl font-semibold text-gray-900">Edit Client</h1>
 	</div>
@@ -166,8 +167,9 @@
 				>
 					{loading ? 'Saving…' : 'Save Changes'}
 				</button>
-				<a href={routes.clients.list()} class="text-sm text-gray-500 transition-colors hover:text-gray-800"
-					>Cancel</a
+				<a
+					href={routes.clients.list()}
+					class="text-sm text-gray-500 transition-colors hover:text-gray-800">Cancel</a
 				>
 			</div>
 		</form>

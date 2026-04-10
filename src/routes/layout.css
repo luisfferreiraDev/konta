@@ -62,6 +62,7 @@
 		font-family: 'Inter', sans-serif;
 		font-feature-settings: 'zero' 1;
 		font-variant-numeric: slashed-zero;
+		scrollbar-gutter: stable;
 	}
 
 	/* Light theme (default) */
