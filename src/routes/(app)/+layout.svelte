@@ -44,7 +44,7 @@
 <ToastContainer />
 
 <!-- ─── Root layout ────────────────────────────────────────────────────────── -->
-<div class="mx-auto flex h-dvh max-w-400 flex-col md:h-auto md:min-h-screen md:flex-row">
+<div class="mx-auto flex h-dvh max-w-[1400px] flex-col gap-8 md:h-auto md:min-h-screen md:flex-row">
 	<!-- ─── Desktop sidebar ──────────────────────────────────────────────────── -->
 	<aside
 		class="sticky top-0 hidden h-screen shrink-0 flex-col gap-2 px-2 py-2
@@ -311,7 +311,7 @@
 		</header>
 
 		<!-- ─── Page content ────────────────────────────────────────────────────── -->
-		<main class="mr-2 flex-1 overflow-x-hidden overflow-y-auto px-4 pb-6 md:px-6">
+		<main class="mr-2 flex-1 overflow-x-hidden overflow-y-auto pb-6">
 			{@render children()}
 		</main>
 	</div>

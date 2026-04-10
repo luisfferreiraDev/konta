@@ -68,7 +68,7 @@
 	<input type="hidden" name="clientId" bind:value={deleteClientId} />
 </form>
 
-<main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+<main class="py-8">
 	<div class="mb-6 flex items-center justify-between">
 		<h1 class="text-2xl font-semibold text-gray-900">Clients</h1>
 		<a

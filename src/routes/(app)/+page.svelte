@@ -31,7 +31,7 @@
 	<title>Dashboard — Konta</title>
 </svelte:head>
 
-<div class="mx-auto max-w-5xl space-y-8 py-8">
+<div class="space-y-8 py-8">
 	<!-- ─── Header ─────────────────────────────────────────────────────────────── -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
@@ -65,25 +65,25 @@
 	<!-- ─── Summary cards ──────────────────────────────────────────────────────── -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<div class="rounded-xl glass px-4 py-4">
-			<p class="text-xs font-medium uppercase tracking-wide text-muted">Total</p>
+			<p class="text-xs font-medium tracking-wide text-muted uppercase">Total</p>
 			<p class="mt-1 text-2xl font-semibold text-primary">{data.summary.total}</p>
 			<p class="mt-0.5 text-xs text-muted">invoices</p>
 		</div>
 
 		<div class="rounded-xl glass px-4 py-4">
-			<p class="text-xs font-medium uppercase tracking-wide text-muted">Draft</p>
+			<p class="text-xs font-medium tracking-wide text-muted uppercase">Draft</p>
 			<p class="mt-1 text-2xl font-semibold text-primary">{data.summary.draft}</p>
 			<p class="mt-0.5 text-xs text-muted">not yet sent</p>
 		</div>
 
 		<div class="rounded-xl glass px-4 py-4">
-			<p class="text-xs font-medium uppercase tracking-wide text-muted">Open</p>
+			<p class="text-xs font-medium tracking-wide text-muted uppercase">Open</p>
 			<p class="mt-1 text-2xl font-semibold text-primary">{data.summary.open}</p>
 			<p class="mt-0.5 text-xs text-muted">awaiting payment</p>
 		</div>
 
 		<div class="rounded-xl glass px-4 py-4">
-			<p class="text-xs font-medium uppercase tracking-wide text-muted">Overdue</p>
+			<p class="text-xs font-medium tracking-wide text-muted uppercase">Overdue</p>
 			<p
 				class="mt-1 text-2xl font-semibold {data.summary.overdue > 0
 					? 'text-red-500'

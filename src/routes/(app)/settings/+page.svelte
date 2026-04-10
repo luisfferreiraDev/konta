@@ -234,7 +234,7 @@
 	<title>Settings — Konta</title>
 </svelte:head>
 
-<main class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+<main class="py-8">
 	<div class="mb-8">
 		<h1 class="text-2xl font-semibold text-gray-900">Organization Settings</h1>
 		<p class="mt-1 text-sm text-gray-500">Manage your organization's profile and preferences.</p>
