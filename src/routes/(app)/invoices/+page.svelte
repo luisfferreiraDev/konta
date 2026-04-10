@@ -3,6 +3,10 @@
 	import DataTable from '$lib/components/DataTable.svelte';
 	import type { PageData } from './$types';
 	import { routes } from '$lib/routes';
+	import Container from '$lib/components/Container.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import { FileSpreadsheet } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -91,33 +95,26 @@
 	<title>Invoices - Konta</title>
 </svelte:head>
 
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-	<div class="mb-6 sm:flex sm:items-center sm:justify-between">
-		<div>
-			<h1 class="text-2xl font-semibold text-gray-900">Invoices</h1>
-			<p class="mt-1 text-sm text-gray-500">Manage your invoices and track payments</p>
-		</div>
-		<div class="mt-4 sm:mt-0">
-			<a
-				href={routes.invoices.new()}
-				class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+<Container>
+	<PageHeader title="Invoices" subtitle="Manage your invoices and track payments">
+		<div class="flex gap-2">
+			<Button variant="primary" href={routes.invoices.new()}
+				><FileSpreadsheet size={14} /> New Invoice</Button
 			>
-				New Invoice
-			</a>
 		</div>
-	</div>
+	</PageHeader>
 
 	<!-- Filters -->
-	<div class="mb-6 rounded-lg bg-white shadow">
+	<div class="mb-6 rounded-lg glass shadow">
 		<form method="get" data-filter-form class="grid grid-cols-1 gap-4 p-4 md:grid-cols-3">
 			<div>
-				<label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+				<label for="status" class="block text-sm font-medium text-primary">Status</label>
 				<select
 					id="status"
 					name="status"
 					value={data.filters.status}
 					onchange={updateFilters}
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					class="mt-1 block w-full rounded-md text-secondary shadow-sm outline-primary-500 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
 				>
 					<option value="">All statuses</option>
 					<option value="draft">Draft</option>
@@ -130,13 +127,13 @@
 			</div>
 
 			<div>
-				<label for="clientId" class="block text-sm font-medium text-gray-700">Client</label>
+				<label for="clientId" class="block text-sm font-medium text-primary">Client</label>
 				<select
 					id="clientId"
 					name="clientId"
 					value={data.filters.clientId}
 					onchange={updateFilters}
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					class="mt-1 block w-full rounded-md text-secondary shadow-sm outline-primary-500 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
 				>
 					<option value="">All clients</option>
 					{#each data.clients as client (client._id)}
@@ -146,14 +143,14 @@
 			</div>
 
 			<div>
-				<label for="search" class="block text-sm font-medium text-gray-700">Invoice Number</label>
+				<label for="search" class="block text-sm font-medium text-primary">Invoice Number</label>
 				<input
 					type="text"
 					id="search"
 					name="search"
 					value={data.filters.search}
 					placeholder="Search..."
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					class="mt-1 block w-full rounded-md text-secondary shadow-sm outline-primary-500 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
 				/>
 			</div>
 		</form>
@@ -194,7 +191,7 @@
 			</div>
 		</div>
 	{/if}
-</div>
+</Container>
 
 <!-- Delete Modal -->
 {#if showDeleteModal}
