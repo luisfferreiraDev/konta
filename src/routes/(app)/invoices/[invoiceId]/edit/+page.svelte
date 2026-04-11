@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import { routes } from '$lib/routes';
+	import Container from '$lib/components/Container.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
@@ -67,24 +70,14 @@
 	<title>Edit Invoice - Konta</title>
 </svelte:head>
 
-<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-	<div class="mb-6">
-		<h1 class="text-2xl font-semibold text-gray-900">Edit Invoice</h1>
-		<p class="mt-1 text-sm text-gray-500">Update invoice details</p>
-	</div>
-
-	{#if form?.error}
-		<div class="mb-6 rounded-md border border-red-200 bg-red-50 p-4">
-			<p class="text-sm text-red-800">{form.error}</p>
-		</div>
-	{/if}
-
+<Container>
+	<PageHeader title="Edit Invoice" subtitle="Update invoice details"></PageHeader>
 	<form method="post" class="space-y-6">
-		<div class="space-y-6 rounded-lg bg-white p-6 shadow">
+		<div class="space-y-6 rounded-lg glass p-6 shadow">
 			<!-- Basic Info -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<div>
-					<label for="clientId" class="block text-sm font-medium text-gray-700">
+					<label for="clientId" class="block text-sm font-medium text-primary">
 						Client <span class="text-red-500">*</span>
 					</label>
 					<select
@@ -92,7 +85,7 @@
 						name="clientId"
 						bind:value={clientId}
 						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						class=" cursor-pointer text-secondary"
 						class:border-red-300={form?.errors?.clientId}
 					>
 						<option value="">Select a client</option>
@@ -106,21 +99,21 @@
 				</div>
 
 				<div>
-					<label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+					<label for="currency" class="block text-sm font-medium text-primary">Currency</label>
 					<input
 						type="text"
 						id="currency"
 						name="currency"
 						bind:value={currency}
 						maxlength="3"
-						class="mt-1 block w-full rounded-md border-gray-300 uppercase shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						class=" cursor-pointer text-secondary"
 					/>
 				</div>
 			</div>
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<div>
-					<label for="issueDate" class="block text-sm font-medium text-gray-700">
+					<label for="issueDate" class="block text-sm font-medium text-primary">
 						Issue Date <span class="text-red-500">*</span>
 					</label>
 					<input
@@ -138,7 +131,7 @@
 				</div>
 
 				<div>
-					<label for="dueDate" class="block text-sm font-medium text-gray-700">
+					<label for="dueDate" class="block text-sm font-medium text-primary">
 						Due Date <span class="text-red-500">*</span>
 					</label>
 					<input
@@ -156,8 +149,8 @@
 				</div>
 
 				<div>
-					<label for="taxRate" class="block text-sm font-medium text-gray-700"
-						>Default Tax Rate (%) <span class="text-xs text-gray-500">blank = 0%</span></label
+					<label for="taxRate" class="block text-sm font-medium text-primary"
+						>Default Tax Rate (%) <span class="text-xs text-secondary">blank = 0%</span></label
 					>
 					<input
 						type="number"
@@ -176,22 +169,16 @@
 			<!-- Line Items -->
 			<div>
 				<div class="mb-3 flex items-center justify-between">
-					<h3 class="text-lg font-medium text-gray-900">Line Items</h3>
-					<button
-						type="button"
-						onclick={addLineItem}
-						class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
-					>
-						Add Line Item
-					</button>
+					<h3 class="text-lg font-medium text-primary">Line Items</h3>
+					<Button onclick={addLineItem}>Add Line Item</Button>
 				</div>
 
 				<div class="space-y-3">
 					{#each lineItems as item, index (index)}
-						<div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+						<div class="rounded-md border glass p-4">
 							<div class="grid grid-cols-12 gap-3">
 								<div class="col-span-12 md:col-span-5">
-									<label for="desc-{index}" class="block text-sm font-medium text-gray-700"
+									<label for="desc-{index}" class="block text-sm font-medium text-primary"
 										>Description</label
 									>
 									<input
@@ -205,8 +192,7 @@
 								</div>
 
 								<div class="col-span-4 md:col-span-2">
-									<label for="qty-{index}" class="block text-sm font-medium text-gray-700"
-										>Qty</label
+									<label for="qty-{index}" class="block text-sm font-medium text-primary">Qty</label
 									>
 									<input
 										type="number"
@@ -221,7 +207,7 @@
 								</div>
 
 								<div class="col-span-4 md:col-span-2">
-									<label for="price-{index}" class="block text-sm font-medium text-gray-700"
+									<label for="price-{index}" class="block text-sm font-medium text-primary"
 										>Unit Price</label
 									>
 									<input
@@ -237,7 +223,7 @@
 								</div>
 
 								<div class="col-span-4 md:col-span-2">
-									<label for="tax-{index}" class="block text-sm font-medium text-gray-700"
+									<label for="tax-{index}" class="block text-sm font-medium text-primary"
 										>Tax % (opt)</label
 									>
 									<input
@@ -265,7 +251,7 @@
 								</div>
 							</div>
 
-							<div class="mt-2 text-sm text-gray-600">
+							<div class="mt-2 text-sm text-secondary">
 								Line total: {formatCurrency(calculateLineTotal(item) + calculateLineTax(item))}
 								<span class="text-gray-400">
 									({formatCurrency(calculateLineTotal(item))} + {formatCurrency(
@@ -281,11 +267,11 @@
 			<!-- Custom Fields -->
 			{#if data.org.customFieldDefs.length > 0}
 				<div>
-					<h3 class="mb-3 text-lg font-medium text-gray-900">Custom Fields</h3>
+					<h3 class="mb-3 text-lg font-medium text-primary">Custom Fields</h3>
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 						{#each data.org.customFieldDefs as fieldDef (fieldDef.key)}
 							<div>
-								<label for="custom-{fieldDef.key}" class="block text-sm font-medium text-gray-700">
+								<label for="custom-{fieldDef.key}" class="block text-sm font-medium text-primary">
 									{fieldDef.label}
 								</label>
 								{#if fieldDef.type === 'text'}
@@ -323,11 +309,11 @@
 			<div class="border-t pt-6">
 				<div class="ml-auto max-w-xs space-y-2">
 					<div class="flex justify-between text-sm">
-						<span class="text-gray-600">Subtotal:</span>
+						<span class="text-secondary">Subtotal:</span>
 						<span class="font-medium">{formatCurrency(subtotal)}</span>
 					</div>
 					<div class="flex justify-between text-sm">
-						<span class="text-gray-600">Tax:</span>
+						<span class="text-secondary">Tax:</span>
 						<span class="font-medium">{formatCurrency(totalTax)}</span>
 					</div>
 					<div class="flex justify-between border-t pt-2 text-lg font-semibold">
@@ -340,18 +326,8 @@
 
 		<!-- Actions -->
 		<div class="flex items-center justify-end gap-3">
-			<a
-				href={routes.invoices.view(data.invoice._id)}
-				class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-			>
-				Cancel
-			</a>
-			<button
-				type="submit"
-				class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
-			>
-				Save Changes
-			</button>
+			<Button variant="secondary" href={routes.invoices.view(data.invoice._id)}>Cancel</Button>
+			<Button type="submit">Save Changes</Button>
 		</div>
 	</form>
-</div>
+</Container>
