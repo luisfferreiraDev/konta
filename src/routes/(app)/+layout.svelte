@@ -260,17 +260,17 @@
 							<div class="my-2 w-full border-t border-border"></div>
 
 							<a
-								href={routes.settings.index()}
+								href={routes.settings.user()}
 								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
 								><User size={16} />Profile</a
 							>
 							<a
-								href={routes.settings.index()}
+								href={routes.settings.invoiceDesign()}
 								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
 								><Paintbrush size={16} />Invoice Design</a
 							>
 							<a
-								href={routes.settings.index()}
+								href={routes.settings.organization()}
 								class=" flex cursor-pointer items-center gap-1.5 rounded-md p-2 text-sm hover:bg-surface-hover"
 								><Settings size={16} />Settings</a
 							>
