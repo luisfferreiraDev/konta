@@ -20,7 +20,10 @@ export const routes = {
 	},
 
 	settings: {
-		index: () => '/settings'
+		index: () => '/settings',
+		organization: () => '/settings/organization',
+		user: () => '/settings/user',
+		invoiceDesign: () => '/settings/invoice-design'
 	},
 
 	dashboard: {
