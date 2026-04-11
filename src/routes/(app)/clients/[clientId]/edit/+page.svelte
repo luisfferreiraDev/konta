@@ -2,6 +2,9 @@
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
 	import { routes } from '$lib/routes';
+	import Container from '$lib/components/Container.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let loading = $state(false);
@@ -19,17 +22,9 @@
 <svelte:head>
 	<title>Edit Client — Konta</title>
 </svelte:head>
-
-<main class="py-8">
-	<div class="mb-6">
-		<a
-			href={routes.clients.list()}
-			class="text-sm text-gray-500 transition-colors hover:text-gray-800">← Clients</a
-		>
-		<h1 class="mt-2 text-2xl font-semibold text-gray-900">Edit Client</h1>
-	</div>
-
-	<div class="rounded-lg border border-gray-200 bg-white p-6">
+<Container>
+	<PageHeader title="Edit Client" backHref={routes.clients.list()}></PageHeader>
+	<div class="rounded-lg glass p-6">
 		<form
 			method="POST"
 			use:enhance={() => {
@@ -42,7 +37,7 @@
 		>
 			<div class="space-y-4">
 				<div>
-					<label for="name" class="mb-1.5 block text-sm font-medium text-gray-700">
+					<label for="name" class="mb-1.5 block text-sm font-medium text-primary">
 						Name <span class="text-red-500">*</span>
 					</label>
 					<input
@@ -62,7 +57,7 @@
 
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 					<div>
-						<label for="taxId" class="mb-1.5 block text-sm font-medium text-gray-700">Tax ID</label>
+						<label for="taxId" class="mb-1.5 block text-sm font-medium text-primary">Tax ID</label>
 						<input
 							id="taxId"
 							name="taxId"
@@ -72,7 +67,7 @@
 						/>
 					</div>
 					<div>
-						<label for="phone" class="mb-1.5 block text-sm font-medium text-gray-700">Phone</label>
+						<label for="phone" class="mb-1.5 block text-sm font-medium text-primary">Phone</label>
 						<input
 							id="phone"
 							name="phone"
@@ -84,7 +79,7 @@
 				</div>
 
 				<div>
-					<label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Email</label>
+					<label for="email" class="mb-1.5 block text-sm font-medium text-primary">Email</label>
 					<input
 						id="email"
 						name="email"
@@ -100,8 +95,7 @@
 				</div>
 
 				<div>
-					<label for="country" class="mb-1.5 block text-sm font-medium text-gray-700">Country</label
-					>
+					<label for="country" class="mb-1.5 block text-sm font-medium text-primary">Country</label>
 					<input
 						id="country"
 						name="country"
@@ -112,8 +106,7 @@
 				</div>
 
 				<div>
-					<label for="address" class="mb-1.5 block text-sm font-medium text-gray-700">Address</label
-					>
+					<label for="address" class="mb-1.5 block text-sm font-medium text-primary">Address</label>
 					<textarea
 						id="address"
 						name="address"
@@ -125,15 +118,15 @@
 
 				{#if data.org?.customFieldDefs?.client?.length}
 					<div class="border-t border-gray-100 pt-4">
-						<p class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+						<p class="mb-3 text-xs font-semibold tracking-wide text-secondary uppercase">
 							Custom Fields
 						</p>
 						<div class="space-y-4">
-							{#each data.org.customFieldDefs.client as field}
+							{#each data.org.customFieldDefs.client as field (field.key)}
 								<div>
 									<label
 										for="customFields[{field.key}]"
-										class="mb-1.5 block text-sm font-medium text-gray-700">{field.label}</label
+										class="mb-1.5 block text-sm font-medium text-primary">{field.label}</label
 									>
 									{#if field.type === 'textarea'}
 										<textarea
@@ -160,18 +153,11 @@
 			</div>
 
 			<div class="mt-6 flex items-center gap-3">
-				<button
-					type="submit"
-					disabled={loading}
-					class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-				>
+				<Button type="submit" disabled={loading}>
 					{loading ? 'Saving…' : 'Save Changes'}
-				</button>
-				<a
-					href={routes.clients.list()}
-					class="text-sm text-gray-500 transition-colors hover:text-gray-800">Cancel</a
-				>
+				</Button>
+				<Button variant="outline" href={routes.clients.list()}>Cancel</Button>
 			</div>
 		</form>
 	</div>
-</main>
+</Container>
