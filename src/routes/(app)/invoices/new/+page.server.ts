@@ -18,6 +18,7 @@ export const load: PageServerLoad = async (event) => {
 		})),
 		org: {
 			currency: org.currency,
+			currencies: ['EUR', 'USD', 'GBP', 'CHF', 'BRL'],
 			defaultTaxRate: org.defaultTaxRate,
 			customFieldDefs: org.customFieldDefs?.invoice || []
 		}

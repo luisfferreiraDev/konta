@@ -116,14 +116,16 @@
 
 				<div>
 					<label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
-					<input
-						type="text"
+					<select
 						id="currency"
 						name="currency"
 						bind:value={currency}
-						maxlength="3"
-						class="mt-1 block w-full rounded-md border-gray-300 uppercase shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					/>
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					>
+						{#each data.org.currencies as c}
+							<option value={c}>{c}</option>
+						{/each}
+					</select>
 				</div>
 			</div>
 
