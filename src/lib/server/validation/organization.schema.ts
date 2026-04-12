@@ -29,13 +29,17 @@ export const updateOrganizationSchema = z.object({
 	defaultTaxRate: z.number().min(0).max(100).optional()
 });
 
+export const INVOICE_LAYOUTS = ['default', 'minimal', 'boxed'] as const;
+export type InvoiceLayout = (typeof INVOICE_LAYOUTS)[number];
+
 export const templateSettingsSchema = z.object({
 	accentColor: z
 		.string()
 		.regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color')
 		.default('#2563eb'),
 	showQrCode: z.boolean().default(false),
-	font: z.string().min(1).default('inter')
+	font: z.string().min(1).default('inter'),
+	layout: z.enum(INVOICE_LAYOUTS).default('default')
 });
 
 export const updateTemplateSettingsSchema = z.object({
@@ -44,7 +48,8 @@ export const updateTemplateSettingsSchema = z.object({
 		.regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color')
 		.optional(),
 	showQrCode: z.boolean().optional(),
-	font: z.string().min(1).optional()
+	font: z.string().min(1).optional(),
+	layout: z.enum(INVOICE_LAYOUTS).optional()
 });
 
 export const customFieldDefsSchema = z.object({
