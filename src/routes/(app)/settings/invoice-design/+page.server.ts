@@ -16,7 +16,8 @@ export const actions: Actions = {
 			accentColor: (formData.get('accentColor') as string) || undefined,
 			showQrCode:
 				showQrCodeRaw !== null ? showQrCodeRaw === 'true' || showQrCodeRaw === 'on' : undefined,
-			font: (formData.get('font') as string) || undefined
+			font: (formData.get('font') as string) || undefined,
+			layout: (formData.get('layout') as string) || undefined
 		});
 
 		if (!parsed.success) {
@@ -29,11 +30,14 @@ export const actions: Actions = {
 
 		const $set: Record<string, unknown> = {};
 		for (const [key, value] of Object.entries(parsed.data)) {
-			$set[`templateSettings.${key}`] = value;
+			// Only set defined values to avoid unsetting fields
+			if (value !== undefined) {
+				$set[`templateSettings.${key}`] = value;
+			}
 		}
 
 		try {
-			await Organization.findByIdAndUpdate(org._id, { $set });
+			await Organization.findByIdAndUpdate(org._id, { $set }, { returnDocument: 'after' });
 		} catch (err) {
 			return fail(500, {
 				action: 'updateTemplate',

@@ -17,7 +17,10 @@ export const load: LayoutServerLoad = async (event) => {
 			currency: org.currency,
 			defaultTaxRate: org.defaultTaxRate,
 			customFieldDefs: org.customFieldDefs,
-			templateSettings: org.templateSettings
+			templateSettings: {
+				...org.templateSettings,
+				layout: org.templateSettings?.layout ?? 'default'
+			}
 		},
 		membership: {
 			role: membership.role

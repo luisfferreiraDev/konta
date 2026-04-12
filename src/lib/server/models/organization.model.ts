@@ -20,10 +20,13 @@ export interface ICustomFieldDefs {
 	client: ICustomFieldDef[];
 }
 
+export type InvoiceLayout = 'default' | 'minimal' | 'boxed';
+
 export interface ITemplateSettings {
 	accentColor: string;
 	showQrCode: boolean;
 	font: string;
+	layout: InvoiceLayout;
 }
 
 export interface IOrganization {
@@ -67,7 +70,8 @@ const organizationSchema = new Schema<IOrganization>(
 		templateSettings: {
 			accentColor: { type: String, default: '#2563eb' },
 			showQrCode: { type: Boolean, default: false },
-			font: { type: String, default: 'inter' }
+			font: { type: String, default: 'inter' },
+			layout: { type: String, default: 'default' }
 		}
 	},
 	{ timestamps: true }

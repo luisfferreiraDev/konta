@@ -72,7 +72,7 @@ export const PATCH: RequestHandler = async (event) => {
 	const updated = await Organization.findByIdAndUpdate(
 		orgId,
 		{ $set: { customFieldDefs: parsed.data } },
-		{ new: true }
+		{ returnDocument: 'after' }
 	);
 	if (!updated) error(404, 'Organization not found');
 
