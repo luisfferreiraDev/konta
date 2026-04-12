@@ -42,7 +42,7 @@ export async function generateInvoiceNumber(orgId: Types.ObjectId | string): Pro
 	const counter = await Counter.findOneAndUpdate(
 		{ _id: counterId },
 		{ $inc: { seq: 1 } },
-		{ new: true }
+		{ returnDocument: 'after' }
 	);
 
 	const paddedNumber = counter!.seq.toString().padStart(3, '0');

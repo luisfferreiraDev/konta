@@ -71,7 +71,7 @@ export const POST: RequestHandler = async (event) => {
 	const org = await Organization.findByIdAndUpdate(
 		orgId,
 		{ $set: { logo: publicPath } },
-		{ new: true }
+		{ returnDocument: 'after' }
 	);
 	if (!org) error(404, 'Organization not found');
 
@@ -98,7 +98,7 @@ export const DELETE: RequestHandler = async (event) => {
 	const updated = await Organization.findByIdAndUpdate(
 		orgId,
 		{ $unset: { logo: '' } },
-		{ new: true }
+		{ returnDocument: 'after' }
 	);
 	if (!updated) error(404, 'Organization not found');
 

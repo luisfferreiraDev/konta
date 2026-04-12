@@ -33,7 +33,7 @@ export const PATCH: RequestHandler = async (event) => {
 		$set[`templateSettings.${key}`] = value;
 	}
 
-	const org = await Organization.findByIdAndUpdate(orgId, { $set }, { new: true });
+	const org = await Organization.findByIdAndUpdate(orgId, { $set }, { returnDocument: 'after' });
 	if (!org) error(404, 'Organization not found');
 
 	return json(org.toObject());

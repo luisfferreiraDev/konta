@@ -45,7 +45,9 @@ export const PATCH: RequestHandler = async (event) => {
 		return json({ error: 'Validation failed', issues: parsed.error.flatten() }, { status: 400 });
 	}
 
-	const org = await Organization.findByIdAndUpdate(orgId, parsed.data, { new: true });
+	const org = await Organization.findByIdAndUpdate(orgId, parsed.data, {
+		returnDocument: 'after'
+	});
 	if (!org) error(404, 'Organization not found');
 
 	return json(org.toObject());
