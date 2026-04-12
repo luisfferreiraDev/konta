@@ -53,8 +53,10 @@ export const load: PageServerLoad = async (event) => {
 			currency: inv.currency,
 			client: inv.clientId
 				? {
-						_id: String((inv.clientId as { _id: unknown; name: string })._id),
-						name: (inv.clientId as { _id: unknown; name: string }).name
+						_id: String(
+							(inv.clientId as unknown as { _id: unknown; name: string })._id
+						),
+						name: (inv.clientId as unknown as { _id: unknown; name: string }).name
 					}
 				: null
 		})),
