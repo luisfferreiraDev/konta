@@ -1,8 +1,17 @@
 import { render } from 'svelte/server';
 import InvoiceTemplate from './InvoiceTemplate.svelte';
+import InvoiceTemplateMinimal from './InvoiceTemplateMinimal.svelte';
+import InvoiceTemplateBoxed from './InvoiceTemplateBoxed.svelte';
 import type { IInvoice } from '../models/invoice.model.js';
 import type { IOrganization } from '../models/organization.model.js';
 import type { IClient } from '../models/client.model.js';
+import type { InvoiceLayout } from '../models/organization.model.js';
+
+const TEMPLATE_COMPONENTS: Record<InvoiceLayout, typeof InvoiceTemplate> = {
+	default: InvoiceTemplate,
+	minimal: InvoiceTemplateMinimal,
+	boxed: InvoiceTemplateBoxed
+};
 
 export interface InvoiceTemplateData {
 	invoice: IInvoice & { clientId: IClient };
@@ -28,7 +37,10 @@ export function renderInvoiceHTML(data: InvoiceTemplateData): string {
 	const googleFont = FONT_MAP[rawFont.toLowerCase()] || 'Inter';
 	const fontFamily = `'${googleFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
 
-	const { body, head } = render(InvoiceTemplate, { props: { invoice, organization } });
+	const layout = (organization.templateSettings?.layout as InvoiceLayout) || 'default';
+	const TemplateComponent = TEMPLATE_COMPONENTS[layout] ?? InvoiceTemplate;
+
+	const { body, head } = render(TemplateComponent, { props: { invoice, organization } });
 
 	const previewStyles = preview
 		? `
