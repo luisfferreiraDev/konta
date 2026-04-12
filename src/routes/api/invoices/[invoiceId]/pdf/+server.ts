@@ -41,7 +41,7 @@ export const GET: RequestHandler = async (event) => {
 
 	const filename = `${invoice.number.replace(/[^a-zA-Z0-9-_]/g, '-')}.pdf`;
 
-	return new Response(pdf, {
+	return new Response(new Uint8Array(pdf), {
 		headers: {
 			'Content-Type': 'application/pdf',
 			'Content-Disposition': `inline; filename="${filename}"`,
